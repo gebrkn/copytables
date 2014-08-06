@@ -1,0 +1,33 @@
+{
+    "manifest_version": 2,
+
+    "description": "Select table cells, rows and columns with Alt+mouse or from a context menu. Copy as rich text, HTML or tab-delimited text.",
+
+    "content_scripts": [
+        {
+            "js": ["src/content.js"],
+            "css": ["src/content.css"],
+            "matches": [ "*://*/*", "file://*/*"]
+        }
+    ],
+
+    "background": {
+        "page": "src/background.html",
+        "persistent": true
+    },
+
+    "permissions": [
+        "clipboardWrite",
+        "contextMenus"
+    ],
+
+    "icons": {
+        "16": "src/ico16.png",
+        "48": "src/ico48.png",
+        "128": "src/ico128.png"
+    },
+
+    "name": "Copytables",
+    "version": "0.1.1",
+    "homepage_url": "http://thisveryfish.com/copytables"
+}
