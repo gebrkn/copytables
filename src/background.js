@@ -5,8 +5,10 @@ menus.push(chrome.contextMenus.create({ "title": "Select Column", "parentId": me
 menus.push(chrome.contextMenus.create({ "title": "Select Table",  "parentId": menus[0], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("selectTable")  }}));
 menus.push(chrome.contextMenus.create({ "type": "separator",      "parentId": menus[0], "enabled": false, "contexts": ["all"] }));
 menus.push(chrome.contextMenus.create({ "title": "Copy",          "parentId": menus[0], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyRich")     }}));
-menus.push(chrome.contextMenus.create({ "title": "Copy as HTML",  "parentId": menus[0], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyHTML")     }}));
-menus.push(chrome.contextMenus.create({ "title": "Copy as Text",  "parentId": menus[0], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyText")     }}));
+menus.push(chrome.contextMenus.create({ "title": "Copy as...",    "parentId": menus[0], "enabled": false, "contexts": ["all"] }));
+menus.push(chrome.contextMenus.create({ "title": "HTML",          "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyHTML")     }}));
+menus.push(chrome.contextMenus.create({ "title": "CSV",           "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyCSV")      }}));
+menus.push(chrome.contextMenus.create({ "title": "Text-Only",     "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyText")     }}));
 
 // Menu selection - dispatch the message to the content.js
 function menuClick(cmd) {
@@ -22,7 +24,9 @@ function menuClick(cmd) {
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     switch(message.command) {
         case "copyText":
-            var t = document.getElementById("___tableselect_clipboard___");
+        case "copyHTML":
+        case "copyCSV":
+            var t = document.getElementById("___copytables_clipboard___");
             t.value = message.content;
             t.focus();
             t.select();
@@ -31,7 +35,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
             sendResponse({});
             break;
         case "copyRich":
-            var t = document.getElementById("___tableselect_div___");
+            var t = document.getElementById("___copytables_div___");
             t.contentEditable = true;
             t.innerHTML = message.content;
             var range = document.createRange();

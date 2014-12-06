@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
 
-    "description": "Select table cells, rows and columns with Alt+mouse or from a context menu. Copy as rich text, HTML or tab-delimited text.",
+    "description": "Select table cells, rows and columns with Alt+mouse or from a context menu. Copy as rich text, HTML, tab-delimited and CSV.",
 
     "content_scripts": [
         {
@@ -28,6 +28,6 @@
     },
 
     "name": "Copytables",
-    "version": "0.1.1",
-    "homepage_url": "http://thisveryfish.com/copytables"
+    "version": "0.2",
+    "homepage_url": "http://gramateka.net/copytables"
 }

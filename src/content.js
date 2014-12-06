@@ -3,12 +3,6 @@
     // Settings
     // ---------------------------
 
-    // Column separator for text-only export.
-    var colSeparator = "\t";
-
-    // Row separator for text-only export.
-    var rowSeparator = "\n";
-
     // Minimal scroll speed (scrolls per second).
     var scrollMinSpeed = 30;
 
@@ -22,13 +16,13 @@
     var scrollAmount = 30;
 
     // Class for selected cells.
-    var clsSelected = "__tableselect__A__";
+    var clsSelected = "__copytables__A__";
 
     // Class for dragged over cells.
-    var clsDragover = "__tableselect__B__";
+    var clsDragover = "__copytables__B__";
 
     // Dummy class for selected cells.
-    var clsSelectedMark = "__tableselect__C__";
+    var clsSelectedMark = "__copytables__C__";
 
     // Common tools
     // ---------------------------
@@ -203,7 +197,7 @@
 
     // True if a cell has a `selected` class.
     var isSelected = function(el) {
-        return el ? (el.className || "").indexOf("__tableselect__") >= 0 : false;
+        return el ? (el.className || "").indexOf("__copytables__") >= 0 : false;
     };
 
     // Convert a table to a matrix. Each element of the matrix is either a real cell (`{td:some-cell}`),
@@ -309,9 +303,8 @@
         });
     };
 
-    // Return selected cells (`all=false`) or the whole table (`all=true')
-    // as tab-delimited text.
-    var selectedText = function(table, all) {
+    // Return selected cells (`all=false`) or the whole table (`all=true') as text-only matrix.
+    var selectedTextMatrix = function(table, all) {
         var m = tableMatrix(table).map(function(row) {
             return row.map(function(cell) {
                 if(cell.td && (all || isSelected(cell.td)))
@@ -320,13 +313,38 @@
             });
         });
 
-        m = trimMatrix(m, function(cell) {
+        return trimMatrix(m, function(cell) {
             return cell.length > 0;
         });
+    };
 
-        return m.map(function(row) {
-            return rstrip(row.join(colSeparator));
-        }).join(rowSeparator);
+    // Convert relative URIs to absolute.
+    var fixRelativeLinks = function(el) {
+
+        function fix(tags, attrs) {
+            each(tags, el, function(e) {
+                $W(attrs).forEach(function(attr) {
+                    if(e.hasAttribute(attr)) {
+                        e[attr] = e[attr]; // force Chrome to absolutize links
+                    }
+                });
+            });
+        }
+
+        fix("A AREA LINK", "href");
+        fix("IMG INPUT SCRIPT", "src longdesc usemap");
+        fix("FORM", "action");
+        fix("Q BLOCKQUOTE INS DEL", "cite");
+        fix("OBJECT", "classid codebase data usemap");
+    };
+
+    // Remove excessive whitespace in a html string.
+    var reduceWhitespace = function(html) {
+        html = html.replace(/\n\r/g, "\n");
+        html = html.replace(/\n[ ]+/g, "\n");
+        html = html.replace(/[ ]+\n/g, "\n");
+        html = html.replace(/\n+/g, "\n");
+        return html;
     };
 
     // Default table cell styles.
@@ -338,7 +356,7 @@
         "background-origin": "padding-box",
         "background-clip": "border-box",
         "background-color": "rgba(0, 0, 0, 0)",
-        "border-collapse": "collapse",
+        "border-collapse": "separate",
         "border-top": "0px none rgb(0, 0, 0)",
         "border-right": "0px none rgb(0, 0, 0)",
         "border-bottom": "0px none rgb(0, 0, 0)",
@@ -350,7 +368,6 @@
         "counter-increment": "",
         "counter-reset": "",
         "direction": "ltr",
-        "display": "table-cell",
         "empty-cells": "show",
         "float": "none",
         "font-family": "Times",
@@ -370,12 +387,37 @@
         "text-decoration": "none solid rgb(0, 0, 0)",
         "text-indent": "0px",
         "text-transform": "none",
-        "unicode-bidi": "normal",
         "vertical-align": "middle",
         "visibility": "visible",
         "white-space": "normal",
         "word-spacing": "0px",
         "z-index": "auto"
+    };
+
+    var defaultStyleProps = Object.keys(defaultStyle);
+
+    // Get actual element style.
+    var getStyle = function(el) {
+        var computed = window.getComputedStyle(el), style = [];
+
+        defaultStyleProps.forEach(function(p) {
+            var val = computed[p];
+
+            // round floating-point pixel values
+            val = val.replace(/\b([\d.]+)px\b/g, function(_, $1) {
+                return Math.round(parseFloat($1)) + "px";
+            });
+
+            if(val != defaultStyle[p]) {
+                style.push(p + ":" + val);
+            }
+        });
+
+        if(computed["display"] == "none") {
+            style.push("display:none");
+        }
+
+        return style.join(";");
     };
 
     // Return selected cells (`all=false`) or the whole table (`all=true')
@@ -389,25 +431,24 @@
             }
         });
 
-        var styles = [], props = Object.keys(defaultStyle);
+        var styles = [];
         walk(table, function(el) {
-            var d = window.getComputedStyle(el), s = [];
-            props.forEach(function(p) {
-                if(d[p] != defaultStyle[p]) {
-                    s.push(p + ":" + d[p]);
-                }
-            });
-            styles.push(s.join(";"));
+            styles.push(getStyle(el));
         });
 
         var frame = document.createElement("IFRAME");
         document.body.appendChild(frame);
         var fdoc = frame.contentDocument;
-        fdoc.body.appendChild(fdoc.importNode(table, true));
-        var ftable = fdoc.body.firstChild;
 
-        walk(ftable, function(t) {
-            t.style.cssText = styles.shift();
+        var base = fdoc.createElement("BASE");
+        base.setAttribute("href", document.location);
+        fdoc.body.appendChild(base);
+
+        fdoc.body.appendChild(fdoc.importNode(table, true));
+        var ftable = fdoc.body.lastChild;
+
+        walk(ftable, function(el) {
+            el.style.cssText = styles.shift();
         });
 
         if(!all) {
@@ -417,6 +458,9 @@
         each("TD TH", ftable, function(td) {
             removeClass(td, clsSelectedMark);
         });
+
+        fixRelativeLinks(ftable);
+        fdoc.body.removeChild(fdoc.body.firstChild);
 
         var html = fdoc.body.innerHTML;
 
@@ -429,8 +473,7 @@
 
         document.body.removeChild(frame);
 
-        html = "<base href='" + document.location + "'>\n" + html;
-        return html;
+        return reduceWhitespace(html);
     };
 
     // Scrolling
@@ -541,7 +584,7 @@
         };
 
         var t = closestScrollable(selection.anchor.parentNode);
-        if(t) {
+        if(t && t != document.documentElement) {
             selection.scrollBase = t;
             selection.x += selection.scrollBase.scrollLeft;
             selection.y += selection.scrollBase.scrollTop;
@@ -607,15 +650,15 @@
     // ---------------------------
 
     // Select a row, a column or a whole table.
-    var selectRowCol = function(command, toggle) {
+    var doSelect = function(command, toggle) {
         var tds = [], sel = bounds(selection.anchor);
 
         each("TD TH", selection.table, function(td) {
             var b = bounds(td), ok = false;
             switch(command) {
-                case "row":    ok = sel[1] == b[1]; break;
-                case "column": ok = sel[0] == b[0]; break;
-                case "table":  ok = true; break;
+                case "selectRow":    ok = sel[1] == b[1]; break;
+                case "selectColumn": ok = sel[0] == b[0]; break;
+                case "selectTable":  ok = true; break;
             }
             if(ok)
                 tds.push(td);
@@ -630,29 +673,39 @@
         }
     };
 
-    // Copy selection as rich text, html or text-only.
-    var doCopy = function(mode) {
-        if(!selection)
-            return;
+    // Generate content to copy.
+    var contentForCopy = function(command) {
 
         var anySelected = $$("TD TH", selection.table).some(function(td) {
             return isSelected(td);
-        }), s = "";
+        });
 
-        switch(mode) {
-            case "rich":
-                s = selectedHTML(selection.table, !anySelected);
-                chrome.runtime.sendMessage({command:"copyRich",content:s});
-                break;
-            case "text":
-                s = selectedText(selection.table, !anySelected);
-                chrome.runtime.sendMessage({command:"copyText",content:s});
-                break;
-            case "html":
-                s = selectedHTML(selection.table, !anySelected);
-                chrome.runtime.sendMessage({command:"copyText",content:s});
-                break;
+        switch(command) {
+            case "copyRich":
+                return selectedHTML(selection.table, !anySelected);
+            case "copyHTML":
+                return selectedHTML(selection.table, !anySelected);
+            case "copyText":
+                var m = selectedTextMatrix(selection.table, !anySelected);
+                return m.map(function(row) {
+                    return rstrip(row.join("\t"));
+                }).join("\n");
+            case "copyCSV":
+                var m = selectedTextMatrix(selection.table, !anySelected);
+                return m.map(function(row) {
+                    return row.map(function(cell) {
+                        return '"' + cell.replace(/"/g, '""') + '"';
+                    }).join(",");
+                }).join("\n");
         }
+        return "";
+    };
+
+    // Copy selection as rich text, html or text-only.
+    var doCopy = function(command) {
+        if(!selection)
+            return;
+        chrome.runtime.sendMessage({command:command, content:contentForCopy(command)});
     };
 
     // Event handlers
@@ -665,13 +718,17 @@
             return;
         }
         switch(message.menuCommand) {
-            case "selectRow":    selectRowCol("row", true);    break;
-            case "selectColumn": selectRowCol("column", true); break;
-            case "selectTable":  selectRowCol("table", true);  break;
-
-            case "copyRich": doCopy("rich"); break;
-            case "copyText": doCopy("text"); break;
-            case "copyHTML": doCopy("html"); break;
+            case "selectRow":
+            case "selectColumn":
+            case "selectTable":
+                doSelect(message.menuCommand, true);
+                break;
+            case "copyRich":
+            case "copyText":
+            case "copyHTML":
+            case "copyCSV":
+                doCopy(message.menuCommand);
+                break;
         }
         sendResponse({});
     });
@@ -739,7 +796,7 @@
             return;
         }
         var ctrl = (navigator.userAgent.indexOf("Macintosh") > 0) ? e.metaKey : e.ctrlKey;
-        selectRowCol(ctrl ? "row" : "column", true);
+        doSelect(ctrl ? "selectRow" : "selectColumn", true);
         e.preventDefault();
         e.stopPropagation();
     };
@@ -749,7 +806,7 @@
         if(!selection) {
             return;
         }
-        doCopy("rich");
+        doCopy("copyRich");
         e.preventDefault();
         e.stopPropagation();
     };
@@ -757,8 +814,8 @@
     // `contextMenu` - enable/disable extension-specific commands.
     var onContextMenu = function(e) {
         lastEvent = e;
-        var td = closest(e.target, "th td");
-        var table = closest(td, "table");
+        var td = closest(e.target, "TH TD");
+        var table = closest(td, "TABLE");
 
         if(!table) {
             chrome.runtime.sendMessage({command:"updateMenu", enabled:false});
@@ -770,7 +827,7 @@
     // main()
     // ---------------------------
 
-    if($$("table").length) {
+    if($$("TABLE").length) {
         document.body.addEventListener("mousedown", onMouseDown, true);
         document.body.addEventListener("dblclick", onDblClick);
         document.body.addEventListener("copy", onCopy);
