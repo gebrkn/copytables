@@ -1,4 +1,4 @@
-(function () { 
+(function () {
 
     // Settings
     // ---------------------------
@@ -218,8 +218,8 @@
         var mat = rows.map(function(r) {
             return cols.map(function(c) {
                 return tds[r + "/" + c] ?
-                    { td: tds[r + "/" + c] } :
-                    { colRef: null, rowRef: null }
+                { td: tds[r + "/" + c] } :
+                { colRef: null, rowRef: null }
             });
         });
 
@@ -422,7 +422,7 @@
 
     // Return selected cells (`all=false`) or the whole table (`all=true')
     // as html.
-    var selectedHTML = function(table, all) {
+    var selectedHTML = function(table, withCSS, all) {
 
         each("TD TH", table, function(td) {
             if(hasClass(td, clsSelected)) {
@@ -448,7 +448,10 @@
         var ftable = fdoc.body.lastChild;
 
         walk(ftable, function(el) {
-            el.style.cssText = styles.shift();
+            if(withCSS)
+                el.style.cssText = styles.shift();
+            else
+                el.style = "";
         });
 
         if(!all) {
@@ -574,7 +577,7 @@
         if(selection) {
             selection.anchor = td;
             return true;
-        } 
+        }
 
         selection = {
             anchor: td,
@@ -682,9 +685,10 @@
 
         switch(command) {
             case "copyRich":
-                return selectedHTML(selection.table, !anySelected);
+            case "copyHTMLCSS":
+                return selectedHTML(selection.table, true, !anySelected);
             case "copyHTML":
-                return selectedHTML(selection.table, !anySelected);
+                return selectedHTML(selection.table, false, !anySelected);
             case "copyText":
                 var m = selectedTextMatrix(selection.table, !anySelected);
                 return m.map(function(row) {
@@ -726,6 +730,7 @@
             case "copyRich":
             case "copyText":
             case "copyHTML":
+            case "copyHTMLCSS":
             case "copyCSV":
                 doCopy(message.menuCommand);
                 break;
@@ -827,12 +832,10 @@
     // main()
     // ---------------------------
 
-    if($$("TABLE").length) {
-        document.body.addEventListener("mousedown", onMouseDown, true);
-        document.body.addEventListener("dblclick", onDblClick);
-        document.body.addEventListener("copy", onCopy);
-        document.body.addEventListener("contextmenu", onContextMenu);
-    }
+    document.body.addEventListener("mousedown", onMouseDown, true);
+    document.body.addEventListener("dblclick", onDblClick);
+    document.body.addEventListener("copy", onCopy);
+    document.body.addEventListener("contextmenu", onContextMenu);
 
 })();
 

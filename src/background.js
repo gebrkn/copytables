@@ -7,6 +7,7 @@ menus.push(chrome.contextMenus.create({ "type": "separator",      "parentId": me
 menus.push(chrome.contextMenus.create({ "title": "Copy",          "parentId": menus[0], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyRich")     }}));
 menus.push(chrome.contextMenus.create({ "title": "Copy as...",    "parentId": menus[0], "enabled": false, "contexts": ["all"] }));
 menus.push(chrome.contextMenus.create({ "title": "HTML",          "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyHTML")     }}));
+menus.push(chrome.contextMenus.create({ "title": "Styled HTML",   "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyHTMLCSS")  }}));
 menus.push(chrome.contextMenus.create({ "title": "CSV",           "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyCSV")      }}));
 menus.push(chrome.contextMenus.create({ "title": "Text-Only",     "parentId": menus[6], "enabled": false, "contexts": ["all"], "onclick": function() { menuClick("copyText")     }}));
 
@@ -25,6 +26,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     switch(message.command) {
         case "copyText":
         case "copyHTML":
+        case "copyHTMLCSS":
         case "copyCSV":
             var t = document.getElementById("___copytables_clipboard___");
             t.value = message.content;
