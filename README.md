@@ -21,3 +21,13 @@ Chrome extension to select and copy table cells.
 * Better HTML export.
 * Better support for weird table backgrounds (thanks [apptaro](https://github.com/apptaro)).
 * Overall speed improvement.
+
+###New in version 0.3
+
+* Styled HTML export.
+
+###New in version 0.4
+
+* New popup menu.
+* Table search function.
+* Configurable hotkey (Ctrl/Alt).

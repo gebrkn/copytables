@@ -7,7 +7,8 @@
         {
             "js": ["src/content.js"],
             "css": ["src/content.css"],
-            "matches": [ "*://*/*", "file://*/*"]
+            "matches": [ "*://*/*", "file://*/*"],
+            "all_frames": false
         }
     ],
 
@@ -18,7 +19,8 @@
 
     "permissions": [
         "clipboardWrite",
-        "contextMenus"
+        "contextMenus",
+        "storage"
     ],
 
     "icons": {
@@ -27,7 +29,16 @@
         "128": "src/ico128.png"
     },
 
+    "browser_action": {
+        "default_icon": {
+            "19": "src/ico19.png",
+            "38": "src/ico38.png"
+        },
+        "default_title": "Copytables",
+        "default_popup": "src/popup.html"
+    },
+
     "name": "Copytables",
-    "version": "0.3",
+    "version": "0.4",
     "homepage_url": "http://merribithouse.net/copytables"
 }

@@ -24,6 +24,12 @@
     // Dummy class for selected cells.
     var clsSelectedMark = "__copytables__C__";
 
+    // Dummy class for selected cells.
+    var clsHighlight = "__copytables__D__";
+
+    // Modifiers: alt, ctrl (or command)
+    var modKeys = ["altKey", (navigator.userAgent.indexOf("Macintosh") > 0) ? "metaKey" : "ctrlKey"];
+
     // Common tools
     // ---------------------------
 
@@ -69,10 +75,10 @@
 
     // Apply a function to given elements within a parent element.
     var each = function(tag, el, fun) {
-        if(!tag.push)
-            tag = $W(tag);
         if(el.nodeType != 1)
             return;
+        if(!tag.push)
+            tag = $W(tag);
         if(tag.indexOf(el.nodeName) >= 0) {
             fun(el);
             return;
@@ -155,6 +161,17 @@
         return [r.left, r.top, r.right, r.bottom];
     };
 
+    // Get element's offset.
+    var offset = function(el) {
+        var r = [0, 0];
+        while(el) {
+            r[0] += el.offsetLeft;
+            r[1] += el.offsetTop;
+            el = el.offsetParent;
+        }
+        return r;
+    };
+
     // True if two rectangles intersect.
     var intersect = function(a, b) {
         return !(a[0] >= b[2] || a[2] <= b[0] || a[1] >= b[3] || a[3] <= b[1])
@@ -185,6 +202,28 @@
     var lstrip = function(s) { return s.replace(/^\s+/, "") };
     var rstrip = function(s) { return s.replace(/\s+$/, "") };
     var strip  = function(s) { return lstrip(rstrip(s)) };
+
+    // Options
+    // ---------------------------
+    
+    var options = {
+        modKey: 0
+    };
+
+    var updateOptions = function(fn) {
+        chrome.storage.local.get(null, function(opts) {
+            if(Object.keys(opts).length)
+                options = opts;
+            if(fn)
+                fn();
+        });
+    }
+
+    var setOption = function(key, val) {
+        options[key] = val;
+        chrome.storage.local.clear();
+        chrome.storage.local.set(options);
+    }
 
     // Selection manipulation
     // ---------------------------
@@ -324,9 +363,8 @@
         function fix(tags, attrs) {
             each(tags, el, function(e) {
                 $W(attrs).forEach(function(attr) {
-                    if(e.hasAttribute(attr)) {
+                    if(e.hasAttribute(attr))
                         e[attr] = e[attr]; // force Chrome to absolutize links
-                    }
                 });
             });
         }
@@ -365,8 +403,8 @@
         "clip": "auto",
         "color": "rgb(0, 0, 0)",
         "content": "",
-        "counter-increment": "",
-        "counter-reset": "",
+        "counter-increment": "none",
+        "counter-reset": "none",
         "direction": "ltr",
         "empty-cells": "show",
         "float": "none",
@@ -398,7 +436,8 @@
 
     // Get actual element style.
     var getStyle = function(el) {
-        var computed = window.getComputedStyle(el), style = [];
+        var computed = window.getComputedStyle(el),
+            style = [];
 
         defaultStyleProps.forEach(function(p) {
             var val = computed[p];
@@ -408,14 +447,12 @@
                 return Math.round(parseFloat($1)) + "px";
             });
 
-            if(val != defaultStyle[p]) {
+            if(val.length && val != defaultStyle[p])
                 style.push(p + ":" + val);
-            }
         });
 
-        if(computed["display"] == "none") {
+        if(computed["display"] == "none")
             style.push("display:none");
-        }
 
         return style.join(";");
     };
@@ -454,9 +491,8 @@
                 el.style = "";
         });
 
-        if(!all) {
+        if(!all)
             trimTable(ftable);
-        }
 
         each("TD TH", ftable, function(td) {
             removeClass(td, clsSelectedMark);
@@ -487,46 +523,45 @@
 
     // Periodic scroll checker.
     var scrollWatch = function() {
-        if(!selection) {
+        if(!selection)
             return;
+
+        function adjust(sx, sy, ww, hh, cx, cy) {
+            if(cx < scrollAmount)      sx -= scrollAmount;
+            if(cx > ww - scrollAmount) sx += scrollAmount;
+            if(cy < scrollAmount)      sy -= scrollAmount;
+            if(cy > hh - scrollAmount) sy += scrollAmount;
+            return [sx, sy];
         }
 
         if(selection.scrollBase) {
 
-            var sx = selection.scrollBase.scrollLeft, sy = selection.scrollBase.scrollTop;
-            var w = selection.scrollBase.clientWidth, h = selection.scrollBase.clientHeight;
             var b = bounds(selection.scrollBase);
-            var cx = lastEvent.clientX - b[0];
-            var cy = lastEvent.clientY - b[1];
+            var s = adjust(
+                selection.scrollBase.scrollLeft,
+                selection.scrollBase.scrollTop,
+                selection.scrollBase.clientWidth,
+                selection.scrollBase.clientHeight,
+                lastEvent.clientX - b[0],
+                lastEvent.clientY - b[1]
+            );
 
-
-            if(cx < scrollAmount) sx -= scrollAmount;
-            if(cx > w - scrollAmount) sx += scrollAmount;
-            if(cy < scrollAmount) sy -= scrollAmount;
-            if(cy > h - scrollAmount) sy += scrollAmount;
-
-            selection.scrollBase.scrollLeft = sx;
-            selection.scrollBase.scrollTop = sy;
-
+            selection.scrollBase.scrollLeft = s[0];
+            selection.scrollBase.scrollTop = s[1];
 
         } else {
 
-            // scroll window
+            var s = adjust(
+                window.scrollX,
+                window.scrollY,
+                window.innerWidth,
+                window.innerHeight,
+                lastEvent.clientX,
+                lastEvent.clientY
+            );
 
-            var sx = window.scrollX, sy = window.scrollY;
-            var w = window.innerWidth, h = window.innerHeight;
-            var cx = lastEvent.clientX;
-            var cy = lastEvent.clientY;
-
-
-            if(cx < scrollAmount) sx -= scrollAmount;
-            if(cx > w - scrollAmount) sx += scrollAmount;
-            if(cy < scrollAmount) sy -= scrollAmount;
-            if(cy > h - scrollAmount) sy += scrollAmount;
-
-            if(sx != window.scrollX || sy != window.scrollY) {
-                window.scrollTo(sx, sy);
-            }
+            if(s[0] != window.scrollX || s[1] != window.scrollY)
+                window.scrollTo(s[0], s[1]);
         }
 
         selection.scrollSpeed *= scrollAcceleration;
@@ -538,39 +573,40 @@
 
     // Reset the scroll speed.
     var scrollReset = function() {
-        if(!selection) {
+        if(!selection)
             return;
-        }
         selection.scrollSpeed = scrollMinSpeed;
     };
 
+    // Stop the scroll checker.
+    var scrollUnwatch = function() {
+        clearTimeout(scrollTimer);
+    }
 
     // Selection tools.
     // ---------------------------
 
-    // Start selecting cells.
-    var selectionInit = function(e) {
+    // Check if an element is selectable.
+    var canSelect = function(el) {
+        return !!(el &&  closest(el, "TABLE") && !closest(el, "A INPUT BUTTON"));
+    }
 
-        if(!e || closest(e.target, "A INPUT BUTTON")) {
-            return false;
-        }
+    // Init a selection.
+    var selectionInit = function(el, extend) {
 
-        var td = closest(e.target, "TH TD"),
+        var td = closest(el, "TH TD"),
             table = closest(td, "TABLE");
 
-        if(!table) {
+        if(!table)
             return false;
-        }
 
         window.getSelection().removeAllRanges();
 
-        if(selection && selection.table != table) {
+        if(selection && selection.table != table)
             selectionReset();
-        }
 
-        if(!e.shiftKey) {
+        if(!extend)
             selection = null;
-        }
 
         scrollReset();
 
@@ -582,8 +618,8 @@
         selection = {
             anchor: td,
             table: table,
-            x: e.clientX,
-            y: e.clientY
+            x: bounds(td)[0] + 1,
+            y: bounds(td)[1] + 1
         };
 
         var t = closestScrollable(selection.anchor.parentNode);
@@ -633,9 +669,8 @@
                 addClass(td, clsDragover);
         });
 
-        if(!selection.selectAnchor) {
+        if(!selection.selectAnchor)
             removeClass(selection.anchor, clsDragover);
-        }
     };
 
     // Reset the selection and event handlers.
@@ -649,11 +684,8 @@
         selection = null;
     };
 
-    // Command helpers
-    // ---------------------------
-
     // Select a row, a column or a whole table.
-    var doSelect = function(command, toggle) {
+    var selectionExtend = function(command, toggle) {
         var tds = [], sel = bounds(selection.anchor);
 
         each("TD TH", selection.table, function(td) {
@@ -669,12 +701,14 @@
 
         var isSelected = tds.every(function(td) { return hasClass(td, clsSelected) });
 
-        if(toggle && isSelected) {
+        if(toggle && isSelected)
             tds.forEach(function(td) { removeClass(td, clsSelected) });
-        } else {
+        else
             tds.forEach(function(td) { addClass(td, clsSelected) });
-        }
     };
+
+    // Command helpers
+    // ---------------------------
 
     // Generate content to copy.
     var contentForCopy = function(command) {
@@ -685,7 +719,7 @@
 
         switch(command) {
             case "copyRich":
-            case "copyHTMLCSS":
+            case "copyStyled":
                 return selectedHTML(selection.table, true, !anySelected);
             case "copyHTML":
                 return selectedHTML(selection.table, false, !anySelected);
@@ -712,69 +746,148 @@
         chrome.runtime.sendMessage({command:command, content:contentForCopy(command)});
     };
 
+    // Select a table.
+    var selectTable = function(table) {
+        if(!table)
+            return;
+        var tds = $$("TD TH", table);
+        if(!tds)
+            return;
+        if(!selectionInit(tds[0]))
+            return;
+        selectionExtend("selectTable");
+
+        var xy = offset(table);
+        window.scrollTo(
+            xy[0] - window.innerWidth / 3,
+            xy[1] - window.innerHeight /3);
+    }
+
+    // Menu enabled/disabled state.
+    var menuState = function() {
+        var n = document.body.getElementsByTagName("TABLE").length,
+            sel = lastEvent && canSelect(lastEvent.target);
+        return {
+            hasSelection: !!selection,
+            numTables:  n,
+            hasTables: n > 0,
+            canSelect: sel,
+            canCopy: !!selection || sel,
+            modKey: options.modKey
+        }
+    }
+
+    // Update the context menu.
+    var menuUpdate = function() {
+        var ms = menuState();
+        chrome.runtime.sendMessage({command:"menuUpdate", state:ms});
+    }
+
     // Event handlers
     // ---------------------------
 
     // Menu event handler (from the background script).
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-        if(!selectionInit(lastEvent)) {
-            selectionReset();
-            return;
-        }
-        switch(message.menuCommand) {
+        switch(message.command) {
+            case "openPopup":
+                break;
             case "selectRow":
             case "selectColumn":
             case "selectTable":
-                doSelect(message.menuCommand, true);
+                if(lastEvent && selectionInit(lastEvent.target))
+                    selectionExtend(message.command, true);
+                else
+                    selectionReset();
+                break;
+            case "findPrevTable":
+            case "findNextTable":
+                var tables = $$("TABLE"),
+                    index = 0;
+                if(selection) {
+                    index = tables.indexOf(selection.table);
+                    if(message.command == "findPrevTable")
+                        index = index == 0 ? tables.length - 1 : index - 1;
+                    else
+                        index = index == tables.length - 1 ? 0 : index + 1;
+                }
+                selectTable(tables[index]);
                 break;
             case "copyRich":
             case "copyText":
             case "copyHTML":
-            case "copyHTMLCSS":
+            case "copyStyled":
             case "copyCSV":
-                doCopy(message.menuCommand);
+                if(selection)
+                    doCopy(message.command);
+                else if(lastEvent && selectionInit(lastEvent.target)) {
+                    selectionExtend("selectTable", false);
+                    doCopy(message.command);
+                    selectionReset();
+                } else
+                    selectionReset();
                 break;
+            case "setModKey0":
+                setOption("modKey", 0);
+                break;
+            case "setModKey1":
+                setOption("modKey", 1);
+                break;
+            case "updateOptions":
+                updateOptions();
+                break;
+            case "activate":
+                menuUpdate();
+                break;
+
         }
-        sendResponse({});
+        sendResponse(menuState());
     });
+
+    var isValidClick = function(e) {
+        if(e.which != 1)
+            return false;
+        if(!e[modKeys[options.modKey]]) {
+            selectionReset();
+            return false;
+        }
+        if(!canSelect(e.target)) {
+            selectionReset();
+            return false;
+        }
+        return true;
+    }
 
     // `mouseDown` - init selection.
     var onMouseDown = function(e) {
         lastEvent = e;
+        menuUpdate();
 
-        if(e.which != 1) {
+        if(!isValidClick(e))
             return;
-        }
-        if(!e.altKey) {
-            selectionReset();
-            return;
-        }
 
-        if(!selectionInit(e)) {
-            selectionReset();
-            return;
-        }
-
+        selectionInit(e.target, e.shiftKey);
         selection.selectAnchor = true;
         if(hasClass(selection.anchor, clsSelected)) {
             removeClass(selection.anchor, clsSelected);
             selection.selectAnchor = false;
         }
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-        scrollWatch();
         selectionUpdate(e);
+        scrollWatch();
+
         e.preventDefault();
         e.stopPropagation();
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
     };
 
     // `mouseMove` - update selection.
     var onMouseMove = function(e) {
         lastEvent = e;
 
-        if(!e.altKey || e.which != 1 || !selection) {
+        if(!selection || e.which != 1 || !e[modKeys[options.modKey]])
             return;
-        }
+
         selection.scrollSpeed = scrollMinSpeed;
         selectionUpdate(e);
         e.preventDefault();
@@ -783,13 +896,13 @@
 
     // `mouseUp` - stop selecting.
     var onMouseUp = function(e) {
-        clearTimeout(scrollTimer);
-
-        if(selection)
+        scrollUnwatch();
+        if(selection) {
             $C(clsDragover, selection.table).forEach(function(td) {
                 removeClass(td, clsDragover);
                 addClass(td, clsSelected);
             });
+        }
 
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
@@ -797,45 +910,42 @@
 
     // `doubleClick` - select columns and rows.
     var onDblClick = function(e) {
-        if(!selection) {
+        if(!isValidClick(e))
             return;
-        }
-        var ctrl = (navigator.userAgent.indexOf("Macintosh") > 0) ? e.metaKey : e.ctrlKey;
-        doSelect(ctrl ? "selectRow" : "selectColumn", true);
+        selectionInit(e.target, 0);
+        var secondaryKey = e[modKeys[1 - options.modKey]];
+        selectionExtend(secondaryKey ? "selectRow" : "selectColumn", true);
         e.preventDefault();
         e.stopPropagation();
     };
 
     // `copy` - copy selection as rich text.
     var onCopy = function(e) {
-        if(!selection) {
+        if(!selection)
             return;
-        }
         doCopy("copyRich");
         e.preventDefault();
         e.stopPropagation();
     };
 
-    // `contextMenu` - enable/disable extension-specific commands.
+    // `contextMenu` - register the last event.
     var onContextMenu = function(e) {
         lastEvent = e;
-        var td = closest(e.target, "TH TD");
-        var table = closest(td, "TABLE");
+        menuUpdate();
 
-        if(!table) {
-            chrome.runtime.sendMessage({command:"updateMenu", enabled:false});
-            return;
-        }
-        chrome.runtime.sendMessage({command:"updateMenu", enabled:true});
-    };
+    }
 
     // main()
     // ---------------------------
 
-    document.body.addEventListener("mousedown", onMouseDown, true);
-    document.body.addEventListener("dblclick", onDblClick);
-    document.body.addEventListener("copy", onCopy);
-    document.body.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("mousedown", onMouseDown, true);
+    document.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("dblclick", onDblClick);
+    document.addEventListener("copy", onCopy);
+
+    updateOptions();
+    menuUpdate();
+
 
 })();
 
