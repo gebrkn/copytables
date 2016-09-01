@@ -2,7 +2,7 @@ var $ = function(x) { return document.getElementById(x) };
 
 // Send a command to the content.
 function sendCommand(cmd, broadcast, fn) {
-    var qry = broadcast ? {} : {active: true, currentWindow: true}; 
+    var qry = broadcast ? {} : {active: true, currentWindow: true};
     chrome.tabs.query(qry, function(tabs) {
         tabs.forEach(function(tab) {
             chrome.tabs.sendMessage(tab.id, {command: cmd}, fn || function(r) {});
@@ -22,7 +22,7 @@ var updateState = function(state) {
 var init = function(state) {
 
     document.addEventListener("click", function(e) {
-        
+
         var cmd = e.target.getAttribute("data-command");
         if(!cmd)
             return;
@@ -34,7 +34,7 @@ var init = function(state) {
             if(e.target.getAttribute("data-noclose") !== "1")
                 window.close();
         });
-    
+
     });
 
     if(navigator.userAgent.indexOf("Macintosh") > 0) {
