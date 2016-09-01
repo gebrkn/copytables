@@ -5,7 +5,7 @@
 
     "content_scripts": [
         {
-            "js": ["src/content.js"],
+            "js": ["src/content.js", "src/ascii-table.min.js"],
             "css": ["src/content.css"],
             "matches": [ "*://*/*", "file://*/*"],
             "all_frames": false

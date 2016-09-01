@@ -15,6 +15,7 @@ menu.copyHTML      = chrome.contextMenus.create({ "title": "HTML",          "par
 menu.copyStyled    = chrome.contextMenus.create({ "title": "Styled HTML",   "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyStyled")  }});
 menu.copyCSV       = chrome.contextMenus.create({ "title": "CSV",           "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyCSV")      }});
 menu.copyText      = chrome.contextMenus.create({ "title": "Text-Only",     "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyText")     }});
+menu.copyMysqlTable      = chrome.contextMenus.create({ "title": "Copy as Mysql Table result",     "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyMysqlTable")     }});
 
 // Send a command to tabs.
 function sendCommand(cmd, broadcast, fn) {
@@ -42,6 +43,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
         case "copyText":
         case "copyHTML":
+        case "copyMysqlTable":
         case "copyStyled":
         case "copyCSV":
             var t = document.getElementById("___copytables_clipboard___");
@@ -86,9 +88,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
             chrome.contextMenus.update(menu.copyStyled,     {enabled:s.canCopy});
             chrome.contextMenus.update(menu.copyCSV,        {enabled:s.canCopy});
             chrome.contextMenus.update(menu.copyText,       {enabled:s.canCopy});
-
+            chrome.contextMenus.update(menu.copyMysqlTable,       {enabled:s.canCopy});
             sendResponse({});
             break;
     }
 });
-

@@ -6,10 +6,10 @@
     // Minimal scroll speed (scrolls per second).
     var scrollMinSpeed = 30;
 
-    // Maximal scroll speed (scrolls per second). 
+    // Maximal scroll speed (scrolls per second).
     var scrollMaxSpeed = 150;
 
-    // Scroll speed acceleration. 
+    // Scroll speed acceleration.
     var scrollAcceleration = 1.01;
 
     // Scroll amount, in pixels.
@@ -205,7 +205,7 @@
 
     // Options
     // ---------------------------
-    
+
     var options = {
         modKey: 0
     };
@@ -650,7 +650,6 @@
         } else {
             ax -= window.scrollX;
             ay -= window.scrollY;
-
         }
 
         var rect = [
@@ -707,6 +706,17 @@
             tds.forEach(function(td) { addClass(td, clsSelected) });
     };
 
+  var arraysEqual = function (arr1, arr2) {
+      if(arr1.length !== arr2.length)
+          return false;
+      for(var i = arr1.length; i--;) {
+          if(arr1[i].trim() != arr2[i].trim())
+              return false;
+      }
+
+      return true;
+  }
+
     // Command helpers
     // ---------------------------
 
@@ -724,10 +734,22 @@
             case "copyHTML":
                 return selectedHTML(selection.table, false, !anySelected);
             case "copyText":
-                var m = selectedTextMatrix(selection.table, !anySelected);
+            var m = selectedTextMatrix(selection.table, !anySelected);
                 return m.map(function(row) {
                     return rstrip(row.join("\t"));
                 }).join("\n");
+            case "copyMysqlTable":
+                var t = new AsciiTable()
+
+                var m = selectedTextMatrix(selection.table, true);
+                headers = $$("TH", selection.table).map(function(td) { return td.innerText.trim(); });
+                t.setHeading(headers);
+
+                if(arraysEqual(headers, m[0])) {
+                  m.shift();
+                }
+
+                return t.addRowMatrix(m).toString()
             case "copyCSV":
                 var m = selectedTextMatrix(selection.table, !anySelected);
                 return m.map(function(row) {
@@ -815,6 +837,7 @@
             case "copyRich":
             case "copyText":
             case "copyHTML":
+            case "copyMysqlTable":
             case "copyStyled":
             case "copyCSV":
                 if(selection)
@@ -948,4 +971,3 @@
 
 
 })();
-
