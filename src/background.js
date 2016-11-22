@@ -14,6 +14,7 @@ menu.copy          = chrome.contextMenus.create({ "title": "Copy as...",    "par
 menu.copyHTML      = chrome.contextMenus.create({ "title": "HTML",          "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyHTML")     }});
 menu.copyStyled    = chrome.contextMenus.create({ "title": "Styled HTML",   "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyStyled")  }});
 menu.copyCSV       = chrome.contextMenus.create({ "title": "CSV",           "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyCSV")      }});
+menu.copyMarkdown  = chrome.contextMenus.create({ "title": "Markdown",      "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyMarkdown") }});
 menu.copyText      = chrome.contextMenus.create({ "title": "Text-Only",     "parentId": menu.copy, "enabled": false, "contexts": ctx, "onclick": function() { menuClick("copyText")     }});
 
 // Send a command to tabs.
@@ -44,6 +45,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         case "copyHTML":
         case "copyStyled":
         case "copyCSV":
+        case "copyMarkdown":
             var t = document.getElementById("___copytables_clipboard___");
             t.value = message.content;
             t.focus();
@@ -85,6 +87,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
             chrome.contextMenus.update(menu.copyHTML,       {enabled:s.canCopy});
             chrome.contextMenus.update(menu.copyStyled,     {enabled:s.canCopy});
             chrome.contextMenus.update(menu.copyCSV,        {enabled:s.canCopy});
+            chrome.contextMenus.update(menu.copyMarkdown,   {enabled:s.canCopy});
             chrome.contextMenus.update(menu.copyText,       {enabled:s.canCopy});
 
             sendResponse({});
