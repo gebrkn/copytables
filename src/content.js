@@ -342,6 +342,37 @@
         });
     };
 
+    // Return selected cells (`all=false`) or the whole table (`all=true') as markdown matrix.
+    var selectedMarkdownMatrix = function(table, all) {
+        var useSeparator = false,
+            headerSeparator = [];
+        var m = tableMatrix(table).map(function(row, rowIndex) {
+            return row.map(function(cell, cellIndex) {
+                if (cell.td && (all || isSelected(cell.td))) {
+                    var text = strip(cell.td.innerText.replace(/[\r\n]+/g, " "));
+                    if (0 === rowIndex && "TH" === cell.td.tagName)
+                        useSeparator = true;
+                    if (!headerSeparator[cellIndex] || headerSeparator[cellIndex].length < text.length)
+                        headerSeparator[cellIndex] = "-".repeat(text.length);
+                    return text;
+                }
+                return "";
+            });
+        });
+        if(useSeparator)
+            m.splice(1, 0, headerSeparator);
+
+        return trimMatrix(m, function(cell) {
+            return cell.length > 0;
+        }).map(function(row) {
+            return row.map(function(cell, cellIndex) {
+                if(headerSeparator[cellIndex] && headerSeparator[cellIndex].length > cell.length)
+                    cell = cell + " ".repeat(headerSeparator[cellIndex].length - cell.length);
+                return cell;
+            });
+        });
+    };
+
     // Return selected cells (`all=false`) or the whole table (`all=true') as text-only matrix.
     var selectedTextMatrix = function(table, all) {
         var m = tableMatrix(table).map(function(row) {
@@ -728,6 +759,11 @@
                 return m.map(function(row) {
                     return rstrip(row.join("\t"));
                 }).join("\n");
+            case "copyMarkdown":
+                var m = selectedMarkdownMatrix(selection.table, !anySelected);
+                return m.map(function(row) {
+                    return rstrip(row.join(" | "));
+                }).join("\n");
             case "copyCSV":
                 var m = selectedTextMatrix(selection.table, !anySelected);
                 return m.map(function(row) {
@@ -816,6 +852,7 @@
             case "copyText":
             case "copyHTML":
             case "copyStyled":
+            case "copyMarkdown":
             case "copyCSV":
                 if(selection)
                     doCopy(message.command);
