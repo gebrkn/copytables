@@ -1,0 +1,173 @@
+mixin mousepad(name)
+    label.mousepad
+        input(data-text=name)
+        span
+
+mixin modifier(code, mode)
+    label.sticky
+        input(type="checkbox" data-modifier=code data-mode=mode)
+        span(data-modifier-name=code)
+
+//- see keyboard.modifiers
+mixin modifiers(mode)
+    +modifier(1 << 10, mode)
+    +modifier(1 << 11, mode)
+    +modifier(1 << 12, mode)
+    +modifier(1 << 13, mode)
+
+mixin format(name)
+    td
+        label.cb
+            input(type="checkbox" data-bool="copy.format.enabled." + name)
+            span Enabled
+    td
+        label.sticky
+            input(type="radio" name="defaultFormat" data-bool="copy.format.default." + name)
+            span Default
+
+- var baseUrl = 'https://merribithouse.net/copytables'
+
+
+doctype html
+html
+    head
+        title Copytables Options
+        script(src="options.js")
+        link(rel="stylesheet" type="text/css" href="options.css")
+
+    body
+
+        h1 Copytables options
+
+        h2 Modifier keys
+        h3
+            | Configure modifier keys for click-and-drag selection.
+            | Note: some combinations might conflict with your system setup.
+
+        .box
+            table
+                tr
+                    td
+                        b To select cells, hold
+                    td
+                        +modifiers('cell')
+                tr
+                    td
+                        b To select columns, hold
+                    td
+                        +modifiers('column')
+                tr
+                    td
+                        b To select rows, hold
+                    td
+                        +modifiers('row')
+                tr
+                    td
+                        b To select tables, hold
+                    td
+                        +modifiers('table')
+                tr
+                    td
+                        b To extend a selection, hold
+                    td
+                        +modifiers('extend')
+
+
+        h2 Capture mode
+        h3
+            | Press a hot key to turn on the capture mode and then select with a simple click-and-drag.
+
+        .box
+            table
+                tr
+                    td: b Enable
+                    td
+                        label.cb
+                            input(type="checkbox" data-bool="capture.enabled")
+                            span Enable capture mode
+                tr
+                    td
+                        b Reset
+                        i Automatically turn off the capture mode when depressing a mouse button.
+                    td
+                        label.cb
+                            input(type="checkbox" data-bool="capture.reset")
+                            span Reset capture when selected
+                tr
+                    td: b Keyboard shortcuts
+                    td
+                        a(href="#" data-command="openConfigureCommands") Configure
+
+
+        h2 Built-in copy formats
+        h3 Select copy formats you want to use. "Default" format is used when you select "Copy" from the Chrome menu.
+
+        .box
+            table
+                tr
+                    td
+                        b Verbatim
+                        i Copies a table preserving all formatting.
+                    +format('RichHTMLCSS')
+                tr
+                    td
+                        b Structured
+                        i Copies a table structure only.
+                    +format('RichHTML')
+                tr
+                    td
+                        b Text-only
+                        i Converts a table to a tab-delimited text.
+                    +format('TextTabs')
+                tr
+                    td
+                        b CSV
+                        i Converts a table into a Comma-Separated text.
+                    +format('TextCSV')
+                tr
+                    td
+                        b HTML
+                        i Copies the HTML source of a table.
+                    +format('TextHTML')
+                tr
+                    td
+                        b HTML+CSS
+                        i Copies the HTML source of a table, including CSS rules.
+                    +format('TextHTMLCSS')
+
+        h2 Custom formats
+        h3
+            | If you know Javascript, you can define your own custom formats here.
+            | For more information, see #[a(href=baseUrl + '/devdocs') the developer documentation].
+
+        .box
+            textarea#custom-code
+
+        h2 Interface
+        h3 Miscellaneous interface options.
+
+        .box
+            table
+                tr
+                    td: b Scroll speed
+                    td
+                        input(type="number" data-text="scroll.speed")
+                tr
+                    td: b Keyboard shortcuts
+                    td
+                        a(href="#" data-command="openConfigureCommands") Configure
+
+        h2 Support
+        h3
+            | If you have questions or want to report a bug, don't hesitate to contact the developer.
+            | This extension is open source, Javascript programmers are welcome to fork and improve it.
+
+        .box
+
+            p
+                a(href=baseUrl) About
+                | &nbsp;|&nbsp;
+                a(href="https://github.com/gebrkn/copytables") Source code
+                | &nbsp;|&nbsp;
+                | &copy; 2014 Georg Barikin
+

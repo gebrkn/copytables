@@ -1,0 +1,34 @@
+<h1>copytables test page</h1>
+
+<style>
+    #htmlbox, #textbox {
+        position: fixed;
+        width: 300px;
+        height: 300px;
+        right: 0;
+        background: white;
+        z-index: 10;
+        border: 1px solid teal;
+    }
+
+    #htmlbox {
+        top: 10px;
+    }
+
+    #textbox {
+        top: 320px;
+    }
+</style>
+<script>
+    function onPaste() {
+        setTimeout(function () {
+            document.querySelector('#htmlbox').innerHTML = document.querySelector('#textbox').value
+        }, 10);
+    }
+</script>
+
+
+<div id="htmlbox" contenteditable="true"></div>
+<textarea id="textbox" onpaste="onPaste()"></textarea>
+
+{{{content}}}

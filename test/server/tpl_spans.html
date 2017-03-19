@@ -1,0 +1,60 @@
+<style>
+#spans {
+    border-collapse: collapse;
+}
+
+#spans th {
+    background: darkblue;
+    color: white;
+    padding: 5px;
+
+}
+#spans td {
+    font-family: Arial;
+    border: 3px solid darkblue;
+    padding: 5px;
+}
+</style>
+
+<table id="spans">
+    <tr>
+        <th rowspan="2">Server</th>
+        <th rowspan="2">Option</th>
+        <th colspan="2">Status</th>
+        <th rowspan="2">Date</th>
+    </tr>
+    <tr>
+        <th>Before update</th>
+        <th>After update</th>
+    </tr>
+    <tr>
+        <td rowspan="2">alpha</td>
+        <td>HDD</td>
+        <td>ok</td>
+        <td>failed</td>
+        <td>2015/01/01</td>
+    </tr>
+    <tr>
+        <td>SSD</td>
+        <td colspan="2">ok</td>
+        <td>2015/01/02</td>
+    </tr>
+    <tr>
+        <td rowspan="3">beta</td>
+        <td>HDD</td>
+        <td rowspan="2">failed</td>
+        <td>ok</td>
+        <td>2015/01/03</td>
+    </tr>
+    <tr>
+        <td>SSD</td>
+        <td>wait</td>
+        <td>2015/01/04</td>
+    </tr>
+    <tr>
+        <td>None</td>
+        <td>ok</td>
+        <td>ok</td>
+        <td>2015/01/05</td>
+    </tr>
+</table>

@@ -1,0 +1,34 @@
+doctype html
+html
+    head
+        script(src="popup.js")
+        link(rel="stylesheet" type="text/css" href="popup.css")
+
+    body
+        table
+            tr
+                td
+                    b Copy:
+                td
+                    span#copy-commands
+            tr
+                td
+                    b Find:
+                td
+                    button(data-command="findPreviousTable") Previous Table
+                    button(data-command="findNextTable") Next Table
+            tr
+                td
+                    b Capture:
+                td
+                    button(data-command="captureOff") Off
+                    button(data-command="captureCell") Cells
+                    button(data-command="captureColumn") Columns
+                    button(data-command="captureRow") Rows
+                    button(data-command="captureTable") Tables
+
+        div
+            p
+                a(data-command="openConfigureCommands") Keyboard shortcuts
+            p
+                a(data-command="openOptionsPage") Options

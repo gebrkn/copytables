@@ -1,0 +1,60 @@
+$border: #f0f0f0
+$body: #777
+$link: #999
+$accent: #1e88ff
+$hot: #f0a340
+$button: #eaeaea
+
+html
+    margin: 0
+    padding: 0
+
+body
+    padding: 0
+    min-width: 390px
+    max-width: 600px
+
+body, td, th
+    font-family: "Roboto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif
+    font-size: 11px
+    color: $body
+
+table
+    width: 100%
+
+td
+    margin: 0
+    padding: 12px
+    font-weight: 400
+    text-align: left
+    line-height: 260%
+    border-bottom: 1px solid $border
+
+td b
+    font-weight: 600
+    white-space: nowrap
+
+a
+    color: $link
+    cursor: pointer
+    border-bottom: 1px dotted $accent
+
+    &:hover
+        color: $accent
+
+button
+    outline : none
+    background: $button
+    border: none
+    border-radius: 6px
+    padding: 4px 8px
+    margin: 0 6px
+    cursor: pointer
+    transition: all 0.2s ease
+
+    &:hover
+        background: $accent
+        color: white
+
+div
+    padding: 0 0 12px 12px

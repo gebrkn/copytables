@@ -1,4 +1,8 @@
 .__copytables__A__ { background: Highlight !important;  }
-.__copytables__B__ { background: Highlight !important;  }
+.__copytables__B__ { background: red !important;  }
 .__copytables__C__ { }
 .__copytables__D__ { outline: 10px solid Highlight  !important; transition: outline 0.2s ease !important; }
+
+
+[data-copytables-selected] { background: green !important; }
+[data-copytables-marked]:not([data-copytables-locked]) { background: red !important; }

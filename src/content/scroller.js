@@ -1,0 +1,89 @@
+var M = module.exports = {};
+
+var dom = require('../lib/dom'),
+    event = require('../lib/event'),
+    preferences = require('../lib/preferences');
+
+function isScrollable(el) {
+    var css = window.getComputedStyle(el);
+    if (!css.overflowX.match(/scroll|auto/) && !css.overflowY.match(/scroll|auto/))
+        return false;
+    return el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight;
+}
+
+function closestScrollable(el) {
+    while (el && el !== document.body && el !== document.documentElement) {
+        if (isScrollable(el))
+            return el;
+        el = el.parentNode;
+    }
+    return null;
+}
+
+function position(base) {
+    return base
+        ? {x: base.scrollLeft, y: base.scrollTop}
+        : {x: window.scrollX, y: window.scrollY};
+
+};
+
+var scrollAmount = 5;
+
+M.Scroller = function(el) {
+    this.base = closestScrollable(el.parentNode),
+    this.anchor = position(this.base);
+};
+
+M.Scroller.prototype.adjustPoint = function (pt) {
+    var p = position(this.base);
+    return {
+        x: pt.x + this.anchor.x - p.x,
+        y: pt.y + this.anchor.y - p.y
+    }
+};
+
+M.Scroller.prototype.scroll = function (e) {
+
+    function adjust(sx, sy, ww, hh, cx, cy) {
+        var a = scrollAmount;
+        if (cx < a)      sx -= a;
+        if (cx > ww - a) sx += a;
+        if (cy < a)      sy -= a;
+        if (cy > hh - a) sy += a;
+        return {x: sx, y: sy};
+    }
+
+    if (this.base) {
+
+        var b = dom.bounds(this.base);
+        var p = adjust(
+            this.base.scrollLeft,
+            this.base.scrollTop,
+            this.base.clientWidth,
+            this.base.clientHeight,
+            e.clientX - b.x,
+            e.clientY - b.y
+        );
+
+        this.base.scrollLeft = p.x;
+        this.base.scrollTop = p.y;
+
+    } else {
+
+        var p = adjust(
+            window.scrollX,
+            window.scrollY,
+            window.innerWidth,
+            window.innerHeight,
+            e.clientX,
+            e.clientY
+        );
+
+        if (p.x != window.scrollX || p.y != window.scrollY) {
+            window.scrollTo(p.x, p.y);
+        }
+    }
+
+    //_state.speed = Math.min(_state.maxSpeed, _state.speed * scrollAcceleration);
+    //_state.timer = setTimeout(M.watch, 1000 / _state.speed);
+};
