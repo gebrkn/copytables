@@ -4,16 +4,31 @@ var M = module.exports = {};
 
 var util = require('./util');
 
-function currentContext() {
-    if (!chrome.tabs) {
-        return 'content';
+function convertMessage(msg) {
+    if (typeof msg !== 'object') {
+        return {name: msg};
     }
-    if (document && document.body && document.body.id === 'popup') {
-        return 'popup';
-    }
-    return 'background';
+    return msg;
 }
 
+function convertSender(sender) {
+    if (!sender) {
+        return {};
+    }
+    if (typeof sender !== 'object') {
+        return sender;
+    }
+    var k = Object.keys(sender);
+    if (k.length === 1 && k[0] === 'id') {
+        return 'background';
+    }
+    if (sender.tab) {
+        var p = Object.assign({}, sender);
+        p.tabId = sender.tab.id;
+        return p;
+    }
+    return sender;
+}
 
 function toBackground(msg) {
     msg.to = 'background';
@@ -63,58 +78,31 @@ M.enumFrames = function (tabFilter) {
             });
         });
     });
-}
-
-function convert(msg) {
-    if (typeof msg !== 'object') {
-        return {name: msg};
-    }
-    return msg;
-}
+};
 
 M.background = function (msg) {
     console.log('MESSAGE: background', msg);
-    return toBackground(convert(msg));
+    return toBackground(convertMessage(msg));
 };
 
 M.frame = function (msg, frame) {
     console.log('MESSAGE: frame', msg, frame);
-    return toFrame(convert(msg), frame);
+    return toFrame(convertMessage(msg), frame);
 };
 
 M.allFrames = function (msg) {
     console.log('MESSAGE: allFrames', msg);
-    msg = convert(msg);
-    return M.enumFrames('active').then(function(frames) {
+    msg = convertMessage(msg);
+    return M.enumFrames('active').then(function (frames) {
         return toFrameList(msg, frames);
     });
 };
 
-function convertSender(sender) {
-    if (!sender) {
-        return {};
-    }
-    if (typeof sender !== 'object') {
-        return sender;
-    }
-    var k = Object.keys(sender);
-    if (k.length === 1 && k[0] === 'id') {
-        return 'background';
-    }
-    if (sender.tab) {
-        var p = Object.assign({}, sender);
-        p.tabId = sender.tab.id;
-        return p;
-    }
-    return sender;
-}
-
 M.listen = function (listeners) {
-    _listeners = listeners;
     chrome.runtime.onMessage.addListener(function (msg, sender, fn) {
-        if (_listeners[msg.name]) {
+        if (listeners[msg.name]) {
             msg.sender = convertSender(sender);
-            var res = _listeners[msg.name](msg);
+            var res = listeners[msg.name](msg);
             //console.log('RESPONDING TO', msg, res);
             return fn(res);
         }

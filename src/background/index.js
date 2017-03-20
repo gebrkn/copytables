@@ -1,50 +1,54 @@
+/// Background script main
+
 var M = module.exports = {};
 
 var message = require('../lib/message'),
+    util = require('../lib/util'),
+    preferences = require('../lib/preferences'),
+
     menu = require('./menu'),
     commands = require('./commands'),
-    helpers = require('./helpers'),
-    util = require('../lib/util'),
-    preferences = require('../lib/preferences')
+    helpers = require('./helpers')
     ;
 
+var messageListeners = {
 
-var messageListeners = {};
+    dropAllSelections: function (msg) {
+        message.allFrames('dropSelection');
+    },
 
-messageListeners.dropAllSelections = function (msg) {
-    message.allFrames('dropSelection');
-};
-
-messageListeners.dropOtherSelections = function (msg) {
-    message.enumFrames('active').then(function (frames) {
-        frames.forEach(function (frame) {
-            if (frame.frameId !== msg.sender.frameId) {
-                message.frame('dropSelection', frame);
-            }
+    dropOtherSelections: function (msg) {
+        message.enumFrames('active').then(function (frames) {
+            frames.forEach(function (frame) {
+                if (frame.frameId !== msg.sender.frameId) {
+                    message.frame('dropSelection', frame);
+                }
+            });
         });
-    });
+    },
+
+    contextMenu: function (msg) {
+        helpers.enumTables().then(function (ts) {
+            menu.enable(['selectRow', 'selectColumn', 'selectTable'], msg.selectable);
+            menu.enable(['copy'], msg.selectable);
+            menu.enable(['findPreviousTable', 'findNextTable'], ts.length > 0);
+        });
+    },
+
+    genericCopy: function (msg) {
+        commands.exec('copy', msg.sender);
+    },
+
+    preferencesUpdated: function (msg) {
+        helpers.updateUI();
+    },
+
+    command: function (msg) {
+        console.log('messageListeners.command', msg.sender)
+        commands.exec(msg.command, msg.sender);
+    }
 };
 
-messageListeners.contextMenu = function (msg) {
-    helpers.enumTables().then(function (ts) {
-        menu.enable(['selectRow', 'selectColumn', 'selectTable'], msg.selectable);
-        menu.enable(['copy'], msg.selectable);
-        menu.enable(['findPreviousTable', 'findNextTable'], ts.length > 0);
-    });
-};
-
-messageListeners.genericCopy = function (msg) {
-    commands.exec('copy', msg.sender);
-};
-
-messageListeners.preferencesUpdated = helpers.preferencesUpdated;
-
-messageListeners.command = function (msg) {
-    console.log('messageListeners.command', msg.sender)
-    commands.exec(msg.command, msg.sender);
-};
-
-//
 
 function init() {
     menu.create();

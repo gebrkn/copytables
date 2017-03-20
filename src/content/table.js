@@ -5,20 +5,67 @@ var dom = require('../lib/dom'),
     cell = require('../lib/cell')
     ;
 
+function listTables() {
+    var all = [];
+
+    dom.find('table').forEach(function (tbl, n) {
+        if (!dom.cells(tbl).length)
+            return;
+        all.push({
+            index: n,
+            table: tbl
+        });
+    });
+
+    return all;
+};
+
 M.locate = function (el) {
-    var
-        td = dom.closest(el, 'td, th'),
+    if (!el) {
+        return null;
+    }
+
+    if (dom.is(el, 'table')) {
+        var cells = dom.cells(el);
+        return cells.length ? {td: cells[0], table: el} : null;
+    }
+
+    var td = dom.closest(el, 'td, th'),
         tbl = td ? dom.closest(td, 'table') : null;
-    return {td: td, table: tbl};
+
+    return (td && tbl) ? {td: td, table: tbl} : null;
 };
 
 M.indexOf = function (tbl) {
-    return dom.indexOf(tbl, 'table');
+    var res = -1;
+
+    listTables().forEach(function (r) {
+        if (tbl === r.table)
+            res = r.index;
+    });
+
+    return res;
 };
 
-M.nth = function (n) {
-    return dom.nth(n, 'table');
+M.byIndex = function (index) {
+    var res = null;
+
+    listTables().forEach(function (r) {
+        if (index === r.index)
+            res = r.table;
+    });
+
+    console.log('byIndex', res)
+    return res;
 };
+
+M.enum = function (selectedTable) {
+    return listTables().map(function (r) {
+        r.selected = r.table === selectedTable;
+        delete r.table;
+        return r;
+    });
+}
 
 M.rawContent = function (tbl) {
     var c = {

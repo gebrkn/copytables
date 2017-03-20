@@ -44,7 +44,7 @@ M.enumTables = function () {
         var all = [];
 
         res.forEach(function (r) {
-            all = all.concat(r.data.map(function (t) {
+            all = all.concat((r.data || []).map(function (t) {
                 t.frame = {
                     tabId: r.receiver.tabId,
                     frameId: r.receiver.frameId
@@ -61,30 +61,17 @@ M.enumTables = function () {
 
 M.findTable = function (direction, start) {
 
-    message.allFrames('enumTables').then(function (res) {
 
-        var allTables = util.flatten(res.map(function (r) {
-            return r.data.map(function (t) {
-                t.tabId = r.receiver.tabId;
-                t.frameId = r.receiver.frameId;
-                return t;
-            });
-        }));
-
-        console.log('ALL_TABLES', allTables, start)
+    M.enumTables().then(function(allTables) {
 
         if (!allTables.length) {
             return;
         }
 
-        allTables.sort(function (a, b) {
-            return a.frameId - b.frameId || a.index - b.index;
-        });
-
         var curr = -1;
 
         allTables.some(function (t, n) {
-            if (start && t.frameId == start.frameId && t.tabId === start.tabId && t.index === start.index) {
+            if (start && t.frame.frameId == start.frameId && t.frame.tabId === start.tabId && t.index === start.index) {
                 curr = n;
                 return true;
             }
@@ -107,6 +94,6 @@ M.findTable = function (direction, start) {
         }
 
         var t = allTables[curr];
-        message.frame({'name': 'selectNthTable', index: t.index}, t);
+        message.frame({'name': 'selectTableByIndex', index: t.index}, t.frame);
     });
 };

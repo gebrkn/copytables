@@ -10,6 +10,10 @@ function each(coll, fn) {
     Array.prototype.forEach.call(coll || [], fn);
 }
 
+M.is = function(el, sel) {
+    return el && el.matches && el.matches(sel);
+};
+
 M.findOne = function (sel, where) {
     return (where || document).querySelector(sel);
 };

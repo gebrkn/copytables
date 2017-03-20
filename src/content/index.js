@@ -55,11 +55,12 @@ function destroyCapture() {
 function startCapture(evt, mode, extend) {
     var t = table.locate(evt.target);
 
-    if (!t.table) {
+    if (!t) {
         destroyCapture();
         return false;
     }
-    if(currentCapture && currentCapture.table !== t.table) {
+
+    if (currentCapture && currentCapture.table !== t.table) {
         destroyCapture();
         extend = false;
     }
@@ -121,10 +122,24 @@ var eventListeners = {
 var messageListeners = {
     dropSelection: selection.drop,
     preferencesUpdated: preferences.load,
-    enumTables: selection.enumTables,
 
-    selectNthTable: function (msg) {
-        selection.selectNthTable(msg.index)
+    enumTables: function (msg) {
+        return table.enum(selection.table());
+    },
+
+    selectTableByIndex: function (msg) {
+        var tbl = table.byIndex(msg.index);
+        if (tbl) {
+            selection.select(tbl, 'table');
+            tbl.scrollIntoView(true);
+        }
+    },
+
+    selectFromContextMenu: function (msg) {
+        var t = table.locate(event.lastTarget());
+        if (t) {
+            selection.toggle(t.td, msg.mode);
+        }
     },
 
     tableIndexFromContextMenu: function () {
