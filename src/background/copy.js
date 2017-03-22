@@ -1,6 +1,7 @@
 var M = module.exports = {};
 
-var util = require('../lib/util')
+var matrix = require('../lib/matrix'),
+    util = require('../lib/util')
     ;
 
 function richCopy(text) {
@@ -36,7 +37,7 @@ function textCopy(text) {
 
 function asTabs(mat) {
     return mat.map(function (row) {
-        return row.map(function(cell) {
+        return row.map(function (cell) {
             return util.strip(util.nobr(cell))
         }).join('\t')
     }).join('\n');
@@ -44,9 +45,9 @@ function asTabs(mat) {
 
 function asCSV(mat) {
     return mat.map(function (row) {
-        return row.map(function(cell) {
+        return row.map(function (cell) {
             var s = util.strip(util.nobr(cell));
-            if(s.match(/^[0-9]+$/))
+            if (s.match(/^-?[0-9]+(\.[0-9]+)?$/))
                 return s;
             return '"' + s.replace(/"/g, '""') + '"';
         }).join(',')
@@ -58,6 +59,7 @@ M.RichHTMLCSS = function (content) {
 };
 
 M.RichHTML = function (content) {
+    console.log(content)
     return richCopy(content.HTML);
 };
 
@@ -69,11 +71,23 @@ M.TextCSV = function (content) {
     return textCopy(asCSV(content.textMatrix));
 };
 
-M.TextHTML = function(content) {
+M.TextTabsSwap = function (content) {
+    return textCopy(asTabs(matrix.transpose(content.textMatrix)));
+};
+
+M.TextCSV = function (content) {
+    return textCopy(asCSV(content.textMatrix));
+};
+
+M.TextCSVSwap = function (content) {
+    return textCopy(asCSV(matrix.transpose(content.textMatrix)));
+};
+
+M.TextHTML = function (content) {
     return textCopy(content.HTML);
 };
 
-M.TextHTMLCSS = function(content) {
+M.TextHTMLCSS = function (content) {
     return textCopy(content.HTMLCSS);
 };
 

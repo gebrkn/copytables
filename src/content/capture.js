@@ -5,8 +5,10 @@ var M = module.exports = {};
 var dom = require('../lib/dom'),
     cell = require('../lib/cell'),
     event = require('../lib/event'),
+    preferences = require('../lib/preferences'),
     util = require('../lib/util'),
 
+    infobar = require('./infobar'),
     table = require('./table'),
     scroller = require('./scroller')
     ;
@@ -78,6 +80,7 @@ M.Capture.prototype.start = function (evt, mode, extend) {
     this.scroller = new scroller.Scroller(t.td);
     this.mode = mode;
     this.extend = extend;
+    this.infoBar = preferences.val('infobar.enabled');
 
     if (!this.anchorPoint)
         extend = false;
@@ -95,8 +98,13 @@ M.Capture.prototype.start = function (evt, mode, extend) {
     var tracker = function (mouseIsDown, evt) {
         self.scroller.scroll(evt);
         self.setCaptured(self.markRect(evt));
-        if (!mouseIsDown)
+
+        if (self.infoBar)
+            infobar.show(cell.find('marked,selected', self.table));
+
+        if (!mouseIsDown) {
             self.onDone(self.table);
+        }
     };
 
     event.trackMouse(evt, tracker, trackerFrequency, trackerAcceleration);

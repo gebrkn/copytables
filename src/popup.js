@@ -20,6 +20,9 @@ function update() {
             cc.appendChild(a);
         }
     });
+
+    dom.findOne('#capture-commands').style.display = preferences.val('capture.enabled') ? '' : 'none';
+
 }
 
 

@@ -71,22 +71,23 @@ M.rawContent = function (tbl) {
     var c = {
         url: document.location.href,
         css: {},
-        html: ''
+        rawHTML: ''
     };
 
     dom.findSelf('*', tbl).forEach(function (el, uid) {
         var sel = cell.selected(el);
         if (sel) {
-            cell.unselect(el);
+            // lock it to remove background without firing off an animation
+            cell.lock(el);
         }
         dom.attr(el, 'data-copytables-uid', uid);
         c.css[uid] = css.read(el);
         if (sel) {
-            cell.select(el);
+            cell.unlock(el);
         }
     });
 
-    c.html = tbl.outerHTML;
+    c.rawHTML = tbl.outerHTML;
 
     dom.findSelf('*', tbl).forEach(function (el) {
         dom.removeAttr(el, 'data-copytables-uid');

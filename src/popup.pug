@@ -17,7 +17,7 @@ html
                 td
                     button(data-command="findPreviousTable") Previous Table
                     button(data-command="findNextTable") Next Table
-            tr
+            tr#capture-commands
                 td
                     b Capture:
                 td
@@ -29,6 +29,6 @@ html
 
         div
             p
-                a(data-command="openConfigureCommands") Keyboard shortcuts
-            p
                 a(data-command="openOptionsPage") Options
+            p
+                a(data-command="openConfigureCommands") Keyboard shortcuts

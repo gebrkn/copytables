@@ -35,7 +35,10 @@ var defaults = {
     'copy.format.enabled.TextCSV': true,
     'copy.format.enabled.TextHTML': true,
     'copy.format.enabled.TextHTMLCSS': true,
-    'copy.format.enabled.TextTabs': true
+    'copy.format.enabled.TextTabs': true,
+
+    'infobar.enabled': true,
+    'infobar.sticky': true
 };
 
 var copyFormats = [
@@ -52,8 +55,16 @@ var copyFormats = [
         name: 'Text-only'
     },
     {
+        id: 'TextTabsSwap',
+        name: 'Text+Swap'
+    },
+    {
         id: 'TextCSV',
         name: 'CSV'
+    },
+    {
+        id: 'TextCSVSwap',
+        name: 'CSV+Swap'
     },
     {
         id: 'TextHTML',
@@ -62,6 +73,29 @@ var copyFormats = [
     {
         id: 'TextHTMLCSS',
         name: 'HTML+CSS'
+    }
+];
+
+var infoFunctions = [
+    {
+        id: 'count',
+        name: 'count',
+    },
+    {
+        id: 'sum',
+        name: 'sum',
+    },
+    {
+        id: 'avg',
+        name: 'average'
+    },
+    {
+        id: 'min',
+        name: 'min'
+    },
+    {
+        id: 'max',
+        name: 'max'
     }
 ];
 
@@ -89,7 +123,6 @@ M.save = function () {
 
 M.setAll = function (obj) {
     prefs = Object.assign({}, prefs, obj);
-
     return M.save();
 };
 
@@ -112,4 +145,8 @@ M.copyFormats = function () {
         f.default = !!M.val('copy.format.default.' + f.id);
         return f;
     });
+};
+
+M.infoFunctions = function() {
+    return infoFunctions;
 };

@@ -44,7 +44,7 @@ function __dbg() {
     [].forEach.call(arguments, function (arg) {
         var t = inspect(arg, 0);
         t = JSON.stringify(t, 0, 4);
-        buf = buf.concat(t.split(nl));
+        buf = buf.concat((t || '').split(nl));
     });
 
     return buf.map(function (x) {

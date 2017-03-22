@@ -98,6 +98,14 @@ M.allFrames = function (msg) {
     });
 };
 
+M.broadcast = function (msg) {
+    console.log('MESSAGE: broadcast', msg);
+    msg = convertMessage(msg);
+    return M.enumFrames().then(function (frames) {
+        return toFrameList(msg, frames);
+    });
+};
+
 M.listen = function (listeners) {
     chrome.runtime.onMessage.addListener(function (msg, sender, fn) {
         if (listeners[msg.name]) {

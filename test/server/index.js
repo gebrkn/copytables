@@ -13,6 +13,26 @@ Number.prototype.times = function (fn) {
 
 let file = path => fs.readFileSync(path, 'utf8');
 
+let renderTemplate = tpl => mustache.render(
+    file(`${__dirname}/tpl_${tpl}.html`),
+    {
+        text: caesar(),
+        table: function () {
+            return function (text, render) {
+                var m = text.match(/(\d+)x(\d+)/);
+                var s = '';
+                Number(m[1]).times(function(r) {
+                    s += '<tr>';
+                    Number(m[2]).times(function(c) {
+                        s += `<td>${r+1}.${c+1}</td>`;
+                    });
+                    s += '</tr>';
+                });
+                return `<table>${s}</table>`;
+            }
+        }
+    }
+);
 
 let renderDoc = content => mustache.render(
     file(`${__dirname}/base.html`),
@@ -44,25 +64,31 @@ let caesar = () => {
     let a = Math.floor(Math.random() * text.length);
     let b = Math.floor(Math.random() * text.length);
 
-    return text.substr(a, b);
+    return '<p>' + text.substr(a, b) + '</p>';
 }
 
 //
 
 
 app.get('/only/:tpl', (req, res, next) => {
-    let content = mustache.render(file(`${__dirname}/tpl_${req.params.tpl}.html`));
+    let content = req.params.tpl.split(',').map(renderTemplate).join('');
     res.send(renderDoc(content));
 });
+
+app.get('/raw/:tpl', (req, res, next) => {
+    let content = req.params.tpl.split(',').map(renderTemplate).join('');
+    res.send(content);
+});
+
 
 app.get('/all', (req, res, next) => {
     let content = '';
 
     glob(__dirname + '/tpl*.html', (err, ls) => {
         ls.forEach(path => {
-            let t = path.match(/tpl_(\w+)/)[1];
-            content += `<h2>${t}</h2>`;
-            content += mustache.render(file(path));
+            let tpl = path.match(/tpl_(\w+)/)[1];
+            content += `<h2>${tpl}</h2>`;
+            content += renderTemplate(tpl);
             content += caesar();
         });
         res.send(renderDoc(content));

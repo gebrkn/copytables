@@ -30,7 +30,7 @@ var messageListeners = {
     contextMenu: function (msg) {
         helpers.enumTables().then(function (ts) {
             menu.enable(['selectRow', 'selectColumn', 'selectTable'], msg.selectable);
-            menu.enable(['copy'], msg.selectable);
+            menu.enable(['copy'], msg.selected);
             menu.enable(['findPreviousTable', 'findNextTable'], ts.length > 0);
         });
     },
@@ -41,6 +41,7 @@ var messageListeners = {
 
     preferencesUpdated: function (msg) {
         helpers.updateUI();
+        message.broadcast('preferencesUpdated');
     },
 
     command: function (msg) {

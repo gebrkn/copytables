@@ -98,6 +98,13 @@ M.create = function () {
 M.enable = function (ids, enabled) {
     ids.forEach(function (id) {
         chrome.contextMenus.update(id, {enabled: enabled});
-
-    })
+        if(id === 'copy') {
+            var cf = preferences.copyFormats().filter(function(f) {
+                return f.enabled;
+            });
+            cf.forEach(function(f) {
+                chrome.contextMenus.update('copy' + f.id, {enabled: enabled});
+            });
+        }
+    });
 };

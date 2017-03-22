@@ -19,6 +19,18 @@
     .tdclass3 {
 
     }
+
+    .animated_td {
+        transition: all 1s;
+        background: cadetblue;
+
+    }
+
+    .animated_tr td {
+        transition: all 1s;
+        background: cornsilk;
+
+    }
 </style>
 
 
@@ -33,4 +45,15 @@
         <td class="tdclass2" style="font-size: 16px; font-weight: bold">class 2 + inline</td>
         <td class="tdclass3">external background</td>
     </tr>
+    <tr>
+        <td class="animated_td">td animated</td>
+    </tr>
+    <tr class="animated_tr">
+        <td>tr animated</td>
+        <td>tr animated</td>
+        <td>tr animated</td>
+        <td>tr animated</td>
+    </tr>
 </table>
+
+{{{text}}}

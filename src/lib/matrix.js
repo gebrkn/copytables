@@ -9,6 +9,8 @@ M.column = function (mat, ci) {
 };
 
 M.transpose = function (mat) {
+    if (!mat.length)
+        return mat;
     return mat[0].map(function (_, ci) {
         return M.column(mat, ci);
     });

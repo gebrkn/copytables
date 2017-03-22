@@ -138,7 +138,7 @@ M.prepare = function (content, useSelection) {
     body.appendChild(base);
 
     var div = doc.createElement('DIV');
-    div.innerHTML = content.html;
+    div.innerHTML = content.rawHTML;
     body.appendChild(div);
 
     var tbl = div.firstChild;

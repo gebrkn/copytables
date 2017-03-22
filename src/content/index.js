@@ -10,9 +10,10 @@ var
     dom = require('../lib/dom'),
     util = require('../lib/util'),
 
-    table = require('./table'),
-    selection = require('./selection'),
     capture = require('./capture'),
+    infobar = require('./infobar'),
+    selection = require('./selection'),
+    table = require('./table'),
     loader = require('./loader')
     ;
 
@@ -39,7 +40,7 @@ function parseEvent(evt) {
         }
     }
 
-    if (preferences.val('_captureMode') && !kmods) {
+    if (preferences.val('capture.enabled') && preferences.val('_captureMode') && !kmods) {
         console.log('got capture', preferences.val('_captureMode'), mods & emod);
         return [preferences.val('_captureMode'), mods & emod];
     }
@@ -49,6 +50,17 @@ function destroyCapture() {
     if (currentCapture) {
         currentCapture.stop();
         currentCapture = null;
+    }
+}
+
+function captureDone(tbl) {
+    table.selectCaptured(tbl);
+    if (preferences.val('infobar.reset'))
+        infobar.hide();
+    if (preferences.val('capture.reset')) {
+        preferences.set('_captureMode', '').then(function () {
+            message.background('preferencesUpdated');
+        });
     }
 }
 
@@ -65,13 +77,13 @@ function startCapture(evt, mode, extend) {
         extend = false;
     }
 
+    if (currentCapture)
+        currentCapture.stop();
+
     currentCapture = currentCapture || new capture.Capture();
     console.log('currentCapture', currentCapture)
 
-    currentCapture.onDone = function (tbl) {
-        table.selectCaptured(tbl);
-        currentCapture.stop();
-    };
+    currentCapture.onDone = captureDone;
 
     selection.start(evt.target);
     currentCapture.start(evt, mode, extend);
@@ -90,6 +102,7 @@ var eventListeners = {
 
         if (!p || !selection.selectable(evt.target)) {
             message.background('dropAllSelections');
+            infobar.hide();
             return;
         }
 
@@ -120,7 +133,11 @@ var eventListeners = {
 };
 
 var messageListeners = {
-    dropSelection: selection.drop,
+    dropSelection: function () {
+        selection.drop();
+        infobar.hide();
+    },
+
     preferencesUpdated: preferences.load,
 
     enumTables: function (msg) {
@@ -161,6 +178,14 @@ var messageListeners = {
 function init() {
     event.listen(document, eventListeners);
     message.listen(messageListeners);
+    //
+    //h = "<span><span>count</span> <span>12 </span></span><span><span>sum</span> <span>34.80 </span></span><span><span>average</span> <span>2.90 </span></span><span><span>min</span> <span>1.30 </span></span><span><span>max</span> <span>4.50 </span></span>"
+    //    barElement = document.createElement('div');
+    //    barElement.innerHTML = '<div></div><div>&times;</div>';
+    //    barElement.className = '__copytables_infobar__ active';
+    //    document.body.appendChild(barElement);
+    //    barElement.firstChild.innerHTML = h
+
 }
 
 M.main = function () {
