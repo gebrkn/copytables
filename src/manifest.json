@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "description": "Select table cells, rows and columns with Alt+mouse or from a context menu. Copy as rich text, HTML, tab-delimited and CSV.",
+    "description": "Select table cells, rows and columns with your mouse or from a context menu. Copy as rich text, HTML, tab-delimited and CSV.",
     "content_scripts": [
         {
             "js": [
@@ -68,6 +68,6 @@
 
     },
     "name": "Copytables",
-    "version": "0.5",
+    "version": "0.5.0",
     "homepage_url": "https://merribithouse.net/copytables"
 }

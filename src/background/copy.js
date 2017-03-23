@@ -59,7 +59,6 @@ M.RichHTMLCSS = function (content) {
 };
 
 M.RichHTML = function (content) {
-    console.log(content)
     return richCopy(content.HTML);
 };
 

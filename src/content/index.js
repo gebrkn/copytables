@@ -77,8 +77,9 @@ function startCapture(evt, mode, extend) {
         extend = false;
     }
 
-    if (currentCapture)
+    if (currentCapture) {
         currentCapture.stop();
+    }
 
     currentCapture = currentCapture || new capture.Capture();
     console.log('currentCapture', currentCapture)
@@ -102,12 +103,10 @@ var eventListeners = {
 
         if (!p || !selection.selectable(evt.target)) {
             message.background('dropAllSelections');
-            infobar.hide();
             return;
         }
 
         startCapture(evt, p[0], p[1]);
-
     },
 
     copy: function (evt) {
@@ -135,7 +134,6 @@ var eventListeners = {
 var messageListeners = {
     dropSelection: function () {
         selection.drop();
-        infobar.hide();
     },
 
     preferencesUpdated: preferences.load,
@@ -153,20 +151,28 @@ var messageListeners = {
     },
 
     selectFromContextMenu: function (msg) {
-        var t = table.locate(event.lastTarget());
+        var el = event.lastTarget(),
+            t = table.locate(el);
+
         if (t) {
-            selection.toggle(t.td, msg.mode);
+            return selection.toggle(t.td, msg.mode);
+        }
+
+        if (msg.mode === 'table') {
+            selection.toggle(dom.closest(el, 'table'), 'table');
         }
     },
 
     tableIndexFromContextMenu: function () {
-        var t = table.locate(event.lastTarget());
-        return t ? table.indexOf(t.table) : null;
+        var el = event.lastTarget(),
+            tbl = dom.closest(el, 'table');
+        return tbl ? table.indexOf(tbl) : null;
     },
 
     contentFromContextMenu: function () {
-        var t = table.locate(event.lastTarget());
-        return t ? table.rawContent(t.table) : null;
+        var el = event.lastTarget(),
+            tbl = dom.closest(el, 'table');
+        return tbl ? table.rawContent(tbl) : null;
     },
 
     contentFromSelection: function () {
@@ -178,14 +184,6 @@ var messageListeners = {
 function init() {
     event.listen(document, eventListeners);
     message.listen(messageListeners);
-    //
-    //h = "<span><span>count</span> <span>12 </span></span><span><span>sum</span> <span>34.80 </span></span><span><span>average</span> <span>2.90 </span></span><span><span>min</span> <span>1.30 </span></span><span><span>max</span> <span>4.50 </span></span>"
-    //    barElement = document.createElement('div');
-    //    barElement.innerHTML = '<div></div><div>&times;</div>';
-    //    barElement.className = '__copytables_infobar__ active';
-    //    document.body.appendChild(barElement);
-    //    barElement.firstChild.innerHTML = h
-
 }
 
 M.main = function () {

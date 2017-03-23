@@ -2,11 +2,12 @@
 
 var M = module.exports = {};
 
-var preferences = require('../lib/preferences');
+var dom = require('../lib/dom'),
+    preferences = require('../lib/preferences');
 
 var barElement = null,
     showTimer = 0,
-    defaultDelay = 500;
+    defaultDelay = 300;
 
 function bar() {
     if (barElement === null) {
@@ -20,19 +21,18 @@ function bar() {
 }
 
 function show() {
-    if (!barElement || barElement.classList.contains('active'))
+    if (dom.hasClass(barElement, 'active')) {
         return;
+    }
 
     showTimer = setTimeout(function () {
-        if (barElement)
-            barElement.classList.add('active');
+        dom.addClass(barElement, 'active');
     }, defaultDelay);
 }
 
 function hide() {
     clearTimeout(showTimer);
-    if (barElement)
-        barElement.classList.remove('active');
+    dom.removeClass(barElement, 'active');
 }
 
 
@@ -42,6 +42,10 @@ function sum(values) {
     }, 0);
 }
 
+function format(n) {
+    return n.toLocaleString();
+}
+
 var compute = {
 
     count: function (values) {
@@ -49,25 +53,25 @@ var compute = {
     },
 
     sum: function (values) {
-        return sum(values).toFixed(2);
+        return format(sum(values));
     },
 
     avg: function (values) {
-        return (values.length ? (sum(values) / values.length) : 0).toFixed(2);
+        return format(values.length ? (sum(values) / values.length) : 0);
     },
 
     min: function (values) {
         var vs = values.map(function (v) {
             return v.number;
         });
-        return (vs.length ? Math.min.apply(Math, vs) : 0).toFixed(2);
+        return format(vs.length ? Math.min.apply(Math, vs) : 0);
     },
 
     max: function (values) {
         var vs = values.map(function (v) {
             return v.number;
         });
-        return (vs.length ? Math.max.apply(Math, vs) : 0).toFixed(2);
+        return format(vs.length ? Math.max.apply(Math, vs) : 0);
     }
 };
 

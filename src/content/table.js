@@ -21,17 +21,8 @@ function listTables() {
 };
 
 M.locate = function (el) {
-    if (!el) {
-        return null;
-    }
-
-    if (dom.is(el, 'table')) {
-        var cells = dom.cells(el);
-        return cells.length ? {td: cells[0], table: el} : null;
-    }
-
     var td = dom.closest(el, 'td, th'),
-        tbl = td ? dom.closest(td, 'table') : null;
+        tbl = dom.closest(td, 'table');
 
     return (td && tbl) ? {td: td, table: tbl} : null;
 };

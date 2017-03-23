@@ -1,4 +1,5 @@
-// Selection tools.
+/// Selection tools.
+
 var M = module.exports = {};
 
 var dom = require('../lib/dom'),
@@ -36,7 +37,6 @@ function cellsToSelect(el, mode) {
             tds.push(td);
         }
     });
-
     return tds;
 }
 
@@ -80,17 +80,21 @@ M.start = function (el) {
     return true;
 };
 
-
 M.select = function (el, mode) {
-    if (M.start(el)) {
+    if(dom.is(el, 'table'))
+        el = dom.cells(el)[0];
+    if (el && M.start(el)) {
         var tds = cellsToSelect(el, mode);
         tds.forEach(cell.select);
     }
 };
 
 M.toggle = function (el, mode) {
-    if (M.start(el)) {
-        var tds = cellsToSelect(el, mode);
-        tds.forEach(tds.every(cell.selected) ? cell.reset : cell.select);
+    if(dom.is(el, 'table'))
+        el = dom.cells(el)[0];
+    if (el && M.start(el)) {
+        var tds = cellsToSelect(el, mode),
+            fn = tds.every(cell.selected) ? cell.reset : cell.select;
+        tds.forEach(fn);
     }
 };

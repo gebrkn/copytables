@@ -5,6 +5,9 @@ var M = module.exports = {};
 var keyboard = require('./keyboard'),
     message = require('./message');
 
+var firstMod = keyboard.modifiers.ALT,
+    secondMod = keyboard.mac ? keyboard.modifiers.META : keyboard.modifiers.CTRL;
+
 var defaults = {
     'mouse.cell': 0,
     'mouse.column': 0,
@@ -12,13 +15,13 @@ var defaults = {
     'mouse.table': 1,
     'mouse.extend': 0,
 
-    'modifier.cell': keyboard.modifiers.ALT,
-    'modifier.column': keyboard.modifiers.META,
-    'modifier.row': keyboard.modifiers.META | keyboard.modifiers.ALT,
+    'modifier.cell': firstMod,
+    'modifier.column': 0,
+    'modifier.row': 0,
     'modifier.table': 0,
     'modifier.extend': keyboard.modifiers.SHIFT,
 
-    'capture.enabled': false,
+    'capture.enabled': true,
     'capture.reset': false,
 
     'scroll.speed': 50,
@@ -41,40 +44,7 @@ var defaults = {
     'infobar.sticky': true
 };
 
-var copyFormats = [
-    {
-        id: 'RichHTMLCSS',
-        name: 'Verbatim'
-    },
-    {
-        id: 'RichHTML',
-        name: 'Structured'
-    },
-    {
-        id: 'TextTabs',
-        name: 'Text-only'
-    },
-    {
-        id: 'TextTabsSwap',
-        name: 'Text+Swap'
-    },
-    {
-        id: 'TextCSV',
-        name: 'CSV'
-    },
-    {
-        id: 'TextCSVSwap',
-        name: 'CSV+Swap'
-    },
-    {
-        id: 'TextHTML',
-        name: 'HTML'
-    },
-    {
-        id: 'TextHTMLCSS',
-        name: 'HTML+CSS'
-    }
-];
+var copyFormats = require('./formats');
 
 var infoFunctions = [
     {
@@ -104,7 +74,16 @@ var prefs = {};
 M.load = function () {
     return new Promise(function (resolve) {
         chrome.storage.local.get(null, function (obj) {
-            prefs = Object.assign({}, defaults, prefs, obj || {});
+            obj = obj || {};
+
+            // from the previous version
+            if('modKey' in obj && String(obj.modKey) === '1') {
+                console.log('FOUND ALTERNATE MODKEY SETTING');
+                obj['modifier.cell'] = secondMod;
+                delete obj.modKey;
+            }
+
+            prefs = Object.assign({}, defaults, prefs, obj);
             console.log('PREFS LOAD', prefs);
             resolve(prefs);
         });

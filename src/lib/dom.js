@@ -10,7 +10,7 @@ function each(coll, fn) {
     Array.prototype.forEach.call(coll || [], fn);
 }
 
-M.is = function(el, sel) {
+M.is = function (el, sel) {
     return el && el.matches && el.matches(sel);
 };
 
@@ -62,11 +62,13 @@ M.findSelf = function (sel, where) {
 M.cells = function (tbl) {
     var ls = [];
 
-    each(tbl.rows, function (tr) {
-        each(tr.cells, function (td) {
-            ls.push(td);
+    if (tbl && tbl.rows) {
+        each(tbl.rows, function (tr) {
+            each(tr.cells, function (td) {
+                ls.push(td);
+            });
         });
-    });
+    }
 
     return ls;
 };
@@ -109,3 +111,16 @@ M.offset = function (el) {
     }
     return r;
 };
+
+M.addClass = function (el, cls) {
+    return el && el.classList && el.classList.add(cls);
+};
+
+M.removeClass = function (el, cls) {
+    return el && el.classList && el.classList.remove(cls);
+};
+
+M.hasClass = function (el, cls) {
+    return el && el.classList && el.classList.contains(cls);
+};
+

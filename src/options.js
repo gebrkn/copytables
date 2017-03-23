@@ -8,7 +8,28 @@ var
 
 var mouseButtonNames = ['Left Button', 'Middle/Wheel', 'Right Button', 'Button 3', 'Button 4'];
 
+var formatTemplate = [
+    '<tr>',
+    '   <td><b>{name}</b><i>{desc}</i></td>',
+    '   <td><label class="cb">',
+    '       <input type="checkbox" data-bool="copy.format.enabled.{id}"><span>Enabled</span>' +
+    '   </label></td>',
+    '   <td><label class="sticky">',
+    '       <input type="radio" name="defaultFormat" data-bool="copy.format.default.{id}"><span>Default</span>',
+    '   </label></td>',
+    '</tr>'
+].join('');
+
+
 function load() {
+
+    var formats = preferences.copyFormats().map(function (f) {
+        return formatTemplate.replace(/{(\w+)}/g, function ($0, $1) {
+            return f[$1];
+        });
+    });
+
+    dom.findOne('#copy-formats').innerHTML = '<table>' + formats.join('') + '</table>';
 
     dom.find('[data-modifier]').forEach(function (el) {
         var code = Number(dom.attr(el, 'data-modifier')),
@@ -76,7 +97,7 @@ window.onload = function () {
     dom.find('.mousepad').forEach(function (el) {
         event.listen(el, {
             mousedown: function (e) {
-                if(e.button !== 2) {
+                if (e.button !== 2) {
                     dom.findOne('input', el).value = e.button;
                     save();
                     event.reset(e);

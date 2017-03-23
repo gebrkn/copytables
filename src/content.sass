@@ -11,12 +11,12 @@ $no-trans: all 0s 0s !important
     transition: $no-trans
 
 [data-copytables-selected]:not([data-copytables-locked])
-    background: green !important
+    background: Highlight !important
     transition: $no-trans
 
 
 [data-copytables-marked]:not([data-copytables-locked])
-    background: red !important
+    background: Highlight !important
     transition: $no-trans
 
 
@@ -27,9 +27,9 @@ html > body > div.__copytables_infobar__
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important
     z-index: 2147483647 !important
     background: rgba($accent, 0.8) !important
-    border-bottom-right-radius: 16px  !important
+    border-bottom-right-radius: 12px  !important
     transition: top 0.5s, visibility 0s 0.5s !important
-    padding: 8px 40px 8px 8px !important
+    padding: 12px 6px 12px 30px !important
     visibility: hidden !important
 
     &.active
@@ -57,10 +57,10 @@ html > body > div.__copytables_infobar__
 
     > div:last-child
         position: absolute !important
-        right: 10px !important
+        left: 10px !important
         top: 3px !important
         font-weight: 200 !important
         font-size: 20px !important
-        line-height: 30px !important
+        line-height: 38px !important
         color: white !important
         cursor: pointer !important

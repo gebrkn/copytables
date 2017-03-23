@@ -5,6 +5,18 @@ var
     event = require('./lib/event')
     ;
 
+function highlightCaptureButton(mode) {
+    mode = mode || 'off';
+    dom.find('#capture-commands button').forEach(function (btn) {
+        var m = (dom.attr(btn, 'data-command') || '').replace('capture', '').toLowerCase();
+        if (m === mode) {
+            dom.addClass(btn, 'on');
+        } else {
+            dom.removeClass(btn, 'on');
+        }
+    });
+}
+
 
 function update() {
 
@@ -21,8 +33,12 @@ function update() {
         }
     });
 
-    dom.findOne('#capture-commands').style.display = preferences.val('capture.enabled') ? '' : 'none';
-
+    if (preferences.val('capture.enabled')) {
+        dom.findOne('#capture-commands').style.display = '';
+        highlightCaptureButton(preferences.val('_captureMode'));
+    } else {
+        dom.findOne('#capture-commands').style.display = 'none';
+    }
 }
 
 
