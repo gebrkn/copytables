@@ -136,6 +136,38 @@ td i
     input:checked + span
         color: $accent
 
+#placement td
+    text-align: center
+
+.placement-box
+    width: 50px
+    height: 30px
+    border: 1px solid $accent
+    position: relative
+    margin-bottom: 5px
+
+.placement-bar
+    width: 25px
+    height: 8px
+    background: $accent
+    position: absolute
+
+.lt .placement-bar
+    left: 1px
+    top: 1px
+
+.rt .placement-bar
+    right: 1px
+    top: 1px
+
+.lb .placement-bar
+    left: 1px
+    bottom: 1px
+
+.rb .placement-bar
+    right: 1px
+    bottom: 1px
+
 #custom-code
     width: 400px
     height: 200px

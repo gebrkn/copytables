@@ -7,12 +7,15 @@ var dom = require('../lib/dom'),
 
 var barElement = null,
     showTimer = 0,
-    defaultDelay = 300;
+    defaultDelay = 300,
+
+    activeClass = '__copytables_infobar__active';
+
 
 function bar() {
     if (barElement === null) {
         barElement = document.createElement('div');
-        barElement.innerHTML = '<div></div><div>&times;</div>';
+        barElement.innerHTML = '<div></div><span></span>';
         barElement.className = '__copytables_infobar__';
         document.body.appendChild(barElement);
         barElement.lastChild.addEventListener('click', M.hide);
@@ -21,18 +24,18 @@ function bar() {
 }
 
 function show() {
-    if (dom.hasClass(barElement, 'active')) {
+    if (dom.hasClass(barElement, activeClass)) {
         return;
     }
 
     showTimer = setTimeout(function () {
-        dom.addClass(barElement, 'active');
+        dom.addClass(barElement, activeClass);
     }, defaultDelay);
 }
 
 function hide() {
     clearTimeout(showTimer);
-    dom.removeClass(barElement, 'active');
+    dom.removeClass(barElement, activeClass);
 }
 
 
@@ -142,9 +145,24 @@ M.show = function (cells) {
     }).join('');
 
     bar().firstChild.innerHTML = html;
+    M.updatePosition();
     show();
 };
 
 M.hide = function () {
     hide();
+};
+
+M.updatePosition = function () {
+    if (!barElement)
+        return;
+
+    ['lt', 'rt', 'lb', 'rb'].forEach(function (p) {
+        var cls = '__copytables_infobar__' + p;
+        dom.removeClass(barElement, cls);
+        if (preferences.val('infobar.placement.' + p)) {
+            dom.addClass(barElement, cls);
+        }
+    });
+
 };

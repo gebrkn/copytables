@@ -9,12 +9,6 @@ var firstMod = keyboard.modifiers.ALT,
     secondMod = keyboard.mac ? keyboard.modifiers.META : keyboard.modifiers.CTRL;
 
 var defaults = {
-    'mouse.cell': 0,
-    'mouse.column': 0,
-    'mouse.row': 0,
-    'mouse.table': 1,
-    'mouse.extend': 0,
-
     'modifier.cell': firstMod,
     'modifier.column': 0,
     'modifier.row': 0,
@@ -24,27 +18,90 @@ var defaults = {
     'capture.enabled': true,
     'capture.reset': false,
 
-    'scroll.speed': 50,
+    'scroll.speed': 300,
+    'scroll.acceleration': 30,
 
-    'copy.format.default.RichHTML': false,
-    'copy.format.default.RichHTMLCSS': true,
-    'copy.format.default.TextCSV': false,
-    'copy.format.default.TextHTML': false,
-    'copy.format.default.TextHTMLCSS': false,
-    'copy.format.default.TextTabs': false,
+    'copy.format.enabled.richHTML': true,
+    'copy.format.enabled.richHTMLCSS': true,
+    'copy.format.enabled.textCSV': true,
+    'copy.format.enabled.textCSVSwap': true,
+    'copy.format.enabled.textHTML': true,
+    'copy.format.enabled.textHTMLCSS': true,
+    'copy.format.enabled.textTabs': true,
+    'copy.format.enabled.textTabsSwap': true,
 
-    'copy.format.enabled.RichHTML': true,
-    'copy.format.enabled.RichHTMLCSS': true,
-    'copy.format.enabled.TextCSV': true,
-    'copy.format.enabled.TextHTML': true,
-    'copy.format.enabled.TextHTMLCSS': true,
-    'copy.format.enabled.TextTabs': true,
+    'copy.format.default.richHTML': true,
 
-    'infobar.enabled': true,
-    'infobar.sticky': true
+    'infobar.enabled': false,
+    'infobar.sticky': true,
+    'infobar.placement.lt': true
 };
 
-var copyFormats = require('./formats');
+var captureModes = [
+    {
+        id: 'off',
+        name: 'Off'
+    },
+    {
+        id: 'cell',
+        name: 'Cells'
+    },
+    {
+        id: 'column',
+        name: 'Columns'
+    },
+    {
+        id: 'row',
+        name: 'Rows'
+    },
+    {
+        id: 'table',
+        name: 'Tables'
+    }
+];
+
+var copyFormats = [
+    {
+        "id": "richHTMLCSS",
+        "name": "As is",
+        "desc": "Copy the table as seen on the screen (to insert into a Word document)"
+    },
+    {
+        "id": "richHTML",
+        "name": "Plain",
+        "desc": "Copy the table without formatting"
+    },
+    {
+        "id": "textTabs",
+        "name": "Text",
+        "desc": "Copy as tab-delimited text"
+    },
+    {
+        "id": "textTabsSwap",
+        "name": "Text+Swap",
+        "desc": "Copy as tab-delimited text, swap columns and rows"
+    },
+    {
+        "id": "textCSV",
+        "name": "CSV",
+        "desc": "Copy as comma-separated text"
+    },
+    {
+        "id": "textCSVSwap",
+        "name": "CSV+Swap",
+        "desc": "Copy as comma-separated text, swap columns and rows"
+    },
+    {
+        "id": "textHTMLCSS",
+        "name": "HTML+CSS",
+        "desc": "Copy as HTML source, retain formatting"
+    },
+    {
+        "id": "textHTML",
+        "name": "HTML",
+        "desc": "Copy as HTML source, without formatting"
+    },
+];
 
 var infoFunctions = [
     {
@@ -128,4 +185,8 @@ M.copyFormats = function () {
 
 M.infoFunctions = function() {
     return infoFunctions;
+};
+
+M.captureModes = function() {
+    return captureModes;
 };

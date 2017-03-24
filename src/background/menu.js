@@ -7,24 +7,24 @@ var mainMenu = {
     title: 'Table...',
     children: [
         {
-            id: 'selectRow',
+            id: 'select_row',
             title: 'Select Row'
         },
         {
-            id: 'selectColumn',
+            id: 'select_column',
             title: 'Select Column'
         },
         {
-            id: 'selectTable',
+            id: 'select_table',
             title: 'Select Table'
         },
         '---',
         {
-            id: 'findPreviousTable',
+            id: 'find_previous',
             title: 'Previous Table'
         },
         {
-            id: 'findNextTable',
+            id: 'find_next',
             title: 'Next Table'
         },
         '---',
@@ -72,7 +72,7 @@ function createMenu(menu, parent) {
 
         sub = cf.map(function(f) {
             return {
-                id: 'copy' + f.id,
+                id: 'copy_' + f.id,
                 title: f.name,
             }
         });
@@ -103,7 +103,7 @@ M.enable = function (ids, enabled) {
                 return f.enabled;
             });
             cf.forEach(function(f) {
-                chrome.contextMenus.update('copy' + f.id, {enabled: enabled});
+                chrome.contextMenus.update('copy_' + f.id, {enabled: enabled});
             });
         }
     });

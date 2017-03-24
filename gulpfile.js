@@ -64,10 +64,17 @@ gulp.task('clean', function () {
 
 gulp.task('make', ['clean', 'pug', 'sass', 'copy', 'js']);
 
+// npm run watch 'http://...'
+var reloadUrl = process.argv[4] || TEST_URL;
+
 gulp.task('reload', ['make'], function () {
-    cp.execSync(`osascript -l JavaScript ./reload-chrome.js '${TEST_URL}'`);
+    cp.execSync('osascript -l JavaScript ./reload-chrome.js "' + reloadUrl + '"');
 });
 
 gulp.task('watch', ['reload'], function () {
     return gulp.watch('./src/**/*', ['reload']);
+});
+
+gulp.task('deploy', ['make'], function () {
+    cp.execSync('rm -f ./copytables.zip && zip -j ./copytables.zip ./app/*');
 });

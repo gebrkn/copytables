@@ -60,3 +60,9 @@ M.nobr = function (s) {
     return s.replace(/[\r\n]+/g, ' ');
 };
 
+M.format = function(s, obj) {
+    return s.replace(/\${(\w+)}/g, function (_, $1) {
+        return obj[$1];
+    });
+};
+

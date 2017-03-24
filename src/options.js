@@ -3,38 +3,61 @@ var
     preferences = require('./lib/preferences'),
     keyboard = require('./lib/keyboard'),
     event = require('./lib/event'),
-    message = require('./lib/message')
-    ;
+    message = require('./lib/message'),
+    util = require('./lib/util')
+;
 
 var mouseButtonNames = ['Left Button', 'Middle/Wheel', 'Right Button', 'Button 3', 'Button 4'];
 
-var formatTemplate = [
-    '<tr>',
-    '   <td><b>{name}</b><i>{desc}</i></td>',
-    '   <td><label class="cb">',
-    '       <input type="checkbox" data-bool="copy.format.enabled.{id}"><span>Enabled</span>' +
-    '   </label></td>',
-    '   <td><label class="sticky">',
-    '       <input type="radio" name="defaultFormat" data-bool="copy.format.default.{id}"><span>Default</span>',
-    '   </label></td>',
-    '</tr>'
-].join('');
+function modifiers(mode) {
+
+    var tpl = [
+        '<label class="sticky">',
+        '   <input type="checkbox" ${checked} data-modifier="${code}" data-mode="${mode}">',
+        '   <span>${name}</span>',
+        '</label>'
+    ].join('');
+
+    var kmod = preferences.val('modifier.' + mode);
+
+    return keyboard.mouseModifiers.map(function (m) {
+        return util.format(tpl, {
+            code: m,
+            name: keyboard.modHTMLNames[m],
+            mode: mode,
+            checked: (kmod & m) ? 'checked' : ''
+        });
+    }).join('');
+}
+
+function copyFormats() {
+
+    var tpl = [
+        '<tr>',
+        '   <td><b>${name}</b><i>${desc}</i></td>',
+        '   <td><label class="cb">',
+        '       <input type="checkbox" data-bool="copy.format.enabled.${id}"><span>Enabled</span>' +
+        '   </label></td>',
+        '   <td><label class="sticky">',
+        '       <input type="radio" name="defaultFormat" data-bool="copy.format.default.${id}"><span>Default</span>',
+        '   </label></td>',
+        '</tr>'
+    ].join('');
+
+
+    var s = preferences.copyFormats().map(function (f) {
+        return util.format(tpl, f);
+    });
+
+    return '<table>' + s.join('') + '</table>';
+}
 
 
 function load() {
+    dom.findOne('#copy-formats').innerHTML = copyFormats();
 
-    var formats = preferences.copyFormats().map(function (f) {
-        return formatTemplate.replace(/{(\w+)}/g, function ($0, $1) {
-            return f[$1];
-        });
-    });
-
-    dom.findOne('#copy-formats').innerHTML = '<table>' + formats.join('') + '</table>';
-
-    dom.find('[data-modifier]').forEach(function (el) {
-        var code = Number(dom.attr(el, 'data-modifier')),
-            mode = dom.attr(el, 'data-mode');
-        el.checked = preferences.val('modifier.' + mode) & code;
+    dom.find('[data-modifiers]').forEach(function (el) {
+        el.innerHTML = modifiers(dom.attr(el, 'data-modifiers'));
     });
 
     dom.find('[data-bool]').forEach(function (el) {
@@ -44,17 +67,6 @@ function load() {
     dom.find('[data-text]').forEach(function (el) {
         el.value = preferences.val(dom.attr(el, 'data-text')) || '';
     });
-
-    dom.find('[data-modifier-name]').forEach(function (el) {
-        el.innerHTML = keyboard.modHTMLNames[dom.attr(el, 'data-modifier-name')];
-    });
-
-    dom.find('.mousepad').forEach(function (el) {
-        var val = dom.findOne('input', el).value || 0,
-            span = dom.findOne('span', el);
-        span.innerHTML = mouseButtonNames[val];
-    });
-
 }
 
 function save() {
@@ -92,18 +104,6 @@ window.onload = function () {
                 event.reset(e);
             }
         }
-    });
-
-    dom.find('.mousepad').forEach(function (el) {
-        event.listen(el, {
-            mousedown: function (e) {
-                if (e.button !== 2) {
-                    dom.findOne('input', el).value = e.button;
-                    save();
-                    event.reset(e);
-                }
-            }
-        });
     });
 };
 

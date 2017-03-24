@@ -3,6 +3,7 @@
 var M = module.exports = {};
 
 M.mac = navigator.userAgent.indexOf('Macintosh') > 0;
+M.win = navigator.userAgent.indexOf('Windows') > 0;
 
 M.modifiers = {
     SHIFT: 1 << 10,
@@ -11,19 +12,29 @@ M.modifiers = {
     META: 1 << 13
 };
 
+M.mouseModifiers = {};
+
+if (M.mac)
+    M.mouseModifiers = [M.modifiers.SHIFT, M.modifiers.ALT, M.modifiers.META];
+else if (M.win)
+    M.mouseModifiers = [M.modifiers.SHIFT, M.modifiers.ALT, M.modifiers.CTRL];
+else
+    M.mouseModifiers = [M.modifiers.SHIFT, M.modifiers.ALT, M.modifiers.CTRL, M.modifiers.META];
+
+
 M.modNames = {};
 
 M.modNames[M.modifiers.CTRL] = 'Ctrl';
 M.modNames[M.modifiers.ALT] = M.mac ? 'Opt' : 'Alt';
-M.modNames[M.modifiers.META] = M.mac ? 'Cmd' : 'Win';
+M.modNames[M.modifiers.META] = M.mac ? 'Cmd' : (M.win ? 'Win' : 'Meta');
 M.modNames[M.modifiers.SHIFT] = 'Shift';
 
 M.modHTMLNames = {};
 
-M.modHTMLNames[M.modifiers.CTRL] = M.mac ? '&#x2303; control' : 'Ctrl';
-M.modHTMLNames[M.modifiers.ALT] = M.mac ? '&#x2325; option' : 'Alt';
-M.modHTMLNames[M.modifiers.META] = M.mac ? '&#x2318; command' : 'Win';
-M.modHTMLNames[M.modifiers.SHIFT] = M.mac ? '&#x21E7; shift' : 'Shift';
+M.modHTMLNames[M.modifiers.CTRL] = M.mac ? '&#x2303; control' : M.modNames[M.modifiers.CTRL];
+M.modHTMLNames[M.modifiers.ALT] = M.mac ? '&#x2325; option' : M.modNames[M.modifiers.ALT];
+M.modHTMLNames[M.modifiers.META] = M.mac ? '&#x2318; command' : M.modNames[M.modifiers.META];
+M.modHTMLNames[M.modifiers.SHIFT] = M.mac ? '&#x21E7; shift' : M.modNames[M.modifiers.SHIFT];
 
 
 M.keyNames = {

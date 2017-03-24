@@ -54,39 +54,39 @@ function asCSV(mat) {
     }).join('\n');
 }
 
-M.RichHTMLCSS = function (content) {
+M.richHTMLCSS = function (content) {
     return richCopy(content.HTMLCSS);
 };
 
-M.RichHTML = function (content) {
+M.richHTML = function (content) {
     return richCopy(content.HTML);
 };
 
-M.TextTabs = function (content) {
+M.textTabs = function (content) {
     return textCopy(asTabs(content.textMatrix));
 };
 
-M.TextCSV = function (content) {
+M.textCSV = function (content) {
     return textCopy(asCSV(content.textMatrix));
 };
 
-M.TextTabsSwap = function (content) {
+M.textTabsSwap = function (content) {
     return textCopy(asTabs(matrix.transpose(content.textMatrix)));
 };
 
-M.TextCSV = function (content) {
+M.textCSV = function (content) {
     return textCopy(asCSV(content.textMatrix));
 };
 
-M.TextCSVSwap = function (content) {
+M.textCSVSwap = function (content) {
     return textCopy(asCSV(matrix.transpose(content.textMatrix)));
 };
 
-M.TextHTML = function (content) {
+M.textHTML = function (content) {
     return textCopy(content.HTML);
 };
 
-M.TextHTMLCSS = function (content) {
+M.textHTMLCSS = function (content) {
     return textCopy(content.HTMLCSS);
 };
 

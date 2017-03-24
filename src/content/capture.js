@@ -13,10 +13,6 @@ var dom = require('../lib/dom'),
     scroller = require('./scroller')
     ;
 
-var
-    trackerFrequency = 100,
-    trackerAcceleration = 1.01;
-
 M.Capture = function () {
     this.anchorPoint = null;
     this.table = null;
@@ -107,7 +103,10 @@ M.Capture.prototype.start = function (evt, mode, extend) {
         }
     };
 
-    event.trackMouse(evt, tracker, trackerFrequency, trackerAcceleration);
+    event.trackMouse(evt,
+        tracker,
+        preferences.val('scroll.speed'),
+        preferences.val('scroll.acceleration'));
 };
 
 M.Capture.prototype.stop = function () {

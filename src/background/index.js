@@ -29,9 +29,9 @@ var messageListeners = {
 
     contextMenu: function (msg) {
         helpers.enumTables().then(function (ts) {
-            menu.enable(['selectRow', 'selectColumn', 'selectTable'], msg.selectable);
+            menu.enable(['select_row', 'select_column', 'select_table'], msg.selectable);
             menu.enable(['copy'], msg.selected);
-            menu.enable(['findPreviousTable', 'findNextTable'], ts.length > 0);
+            menu.enable(['find_previous', 'find_next'], ts.length > 0);
         });
     },
 

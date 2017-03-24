@@ -15,7 +15,7 @@ mixin modifiers(mode)
     +modifier(1 << 12, mode)
     +modifier(1 << 13, mode)
 
-- var baseUrl = 'https://merribithouse.net/copytables'
+- var baseUrl = 'http://merribithouse.net/copytables'
 
 
 doctype html
@@ -39,28 +39,23 @@ html
                 tr
                     td
                         b To select cells, hold
-                    td
-                        +modifiers('cell')
+                    td(data-modifiers="cell")
                 tr
                     td
                         b To select columns, hold
-                    td
-                        +modifiers('column')
+                    td(data-modifiers="column")
                 tr
                     td
                         b To select rows, hold
-                    td
-                        +modifiers('row')
+                    td(data-modifiers="row")
                 tr
                     td
                         b To select tables, hold
-                    td
-                        +modifiers('table')
+                    td(data-modifiers="table")
                 tr
                     td
                         b To extend a selection, hold
-                    td
-                        +modifiers('extend')
+                    td(data-modifiers="extend")
 
 
         h2 Capture mode
@@ -113,6 +108,28 @@ html
                         label.cb
                             input(type="checkbox" data-bool="infobar.reset")
                             span Yes
+                tr
+                    td
+                        b Placement
+                    td
+                        table#placement
+                            tr
+                                td.lt
+                                    .placement-box
+                                        .placement-bar
+                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.lt")
+                                td.lb
+                                    .placement-box
+                                        .placement-bar
+                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.lb")
+                                td.rt
+                                    .placement-box
+                                        .placement-bar
+                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.rt")
+                                td.rb
+                                    .placement-box
+                                        .placement-bar
+                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.rb")
 
 
         h2 Support

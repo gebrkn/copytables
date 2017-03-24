@@ -2,45 +2,46 @@ var
     dom = require('./lib/dom'),
     preferences = require('./lib/preferences'),
     message = require('./lib/message'),
-    event = require('./lib/event')
-    ;
+    event = require('./lib/event'),
+    util = require('./lib/util')
+;
 
-function highlightCaptureButton(mode) {
-    mode = mode || 'off';
-    dom.find('#capture-commands button').forEach(function (btn) {
-        var m = (dom.attr(btn, 'data-command') || '').replace('capture', '').toLowerCase();
-        if (m === mode) {
-            dom.addClass(btn, 'on');
-        } else {
-            dom.removeClass(btn, 'on');
-        }
-    });
+function captureButtons() {
+    var mode = preferences.val('_captureMode') || 'off';
+
+    return preferences.captureModes().map(function (m) {
+        return util.format(
+            '<button class="${cls}" data-command="capture_${id}">${name}</button>',
+            {
+                id: m.id,
+                name: m.name,
+                cls: (m.id === mode) ? 'on' : ''
+            });
+    }).join('');
 }
 
+function copyButtons() {
+    console.log(preferences.copyFormats())
+    return preferences.copyFormats().filter(function (f) {
+        return f.enabled;
+    }).map(function (f) {
+        return util.format(
+            '<button data-command="copy_${id}" title="${desc}">${name}</button>',
+            f);
+    }).join('');
+}
 
 function update() {
 
-    var cc = dom.findOne('#copy-commands');
-
-    cc.innerHTML = '';
-
-    preferences.copyFormats().forEach(function (f) {
-        if (f.enabled) {
-            var a = document.createElement('button');
-            dom.attr(a, 'data-command', 'copy' + f.id);
-            a.textContent = f.name;
-            cc.appendChild(a);
-        }
-    });
+    dom.findOne('#copy-buttons').innerHTML = copyButtons();
 
     if (preferences.val('capture.enabled')) {
-        dom.findOne('#capture-commands').style.display = '';
-        highlightCaptureButton(preferences.val('_captureMode'));
+        dom.findOne('#capture-row').style.display = '';
+        dom.findOne('#capture-buttons').innerHTML = captureButtons();
     } else {
-        dom.findOne('#capture-commands').style.display = 'none';
+        dom.findOne('#capture-row').style.display = 'none';
     }
 }
-
 
 function init() {
     update();
@@ -59,4 +60,3 @@ function init() {
 window.onload = function () {
     preferences.load().then(init);
 };
-

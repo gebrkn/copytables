@@ -47,7 +47,7 @@ M.trackMouse = function (evt, fn, frequency, acceleration) {
 
     function watch() {
         fn(true, tracker.lastEvent);
-        tracker.freq = Math.min(1000, tracker.freq * tracker.acceleration);
+        tracker.freq = Math.min(1000, tracker.freq + tracker.freq / (100 * tracker.acceleration));
         tracker.timer = setTimeout(watch, 1000 / tracker.freq);
     }
 
@@ -62,17 +62,22 @@ M.trackMouse = function (evt, fn, frequency, acceleration) {
         mousemove: function (evt) {
             M.reset(evt);
             tracker.lastEvent = evt;
-            fn(true, evt);
 
-            clearTimeout(tracker.timer);
-            tracker.freq = tracker.frequency;
-            watch();
+            if(evt.buttons === 1) {
+                clearTimeout(tracker.timer);
+                tracker.freq = tracker.frequency;
+                watch();
+            } else {
+                reset();
+                fn(false, evt);
+            }
         },
 
         mouseup: function (evt) {
-            reset();
             M.reset(evt);
             tracker.lastEvent = evt;
+
+            reset();
             fn(false, evt);
         }
     };

@@ -74,34 +74,36 @@ M.exec = function (cmd, sender) {
     if (cmd === 'copy') {
         preferences.copyFormats().forEach(function (f) {
             if (f.default) {
-                cmd = 'copy' + f.id;
+                cmd = 'copy_' + f.id;
             }
         });
     }
 
-    var m = cmd.match(/^copy(\w+)/);
+    var m;
+
+    m = cmd.match(/^copy_(\w+)/);
     if (m) {
         return copyCommand(m[1], sender);
     }
 
-    var m = cmd.match(/^capture(\w+)/);
+    m = cmd.match(/^capture_(\w+)/);
     if (m) {
-        return captureCommand(m[1].toLowerCase(), sender);
+        return captureCommand(m[1], sender);
     }
 
-    var m = cmd.match(/^select(\w+)/);
+    m = cmd.match(/^select_(\w+)/);
     if (m) {
-        return selectCommand(m[1].toLowerCase(), sender);
+        return selectCommand(m[1], sender);
     }
 
     switch (cmd) {
-        case 'findNextTable':
+        case 'find_next':
             return findTableCommand(+1, sender);
-        case 'findPreviousTable':
+        case 'find_previous':
             return findTableCommand(-1, sender);
-        case 'openOptionsPage':
+        case 'open_options':
             return chrome.runtime.openOptionsPage();
-        case 'openConfigureCommands':
+        case 'open_commands':
             return chrome.tabs.create({url: 'chrome://extensions/configureCommands'});
     }
 };

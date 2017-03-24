@@ -5,7 +5,7 @@
   "scripts": {
     "chrome": "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --enable-logging=stderr --v=1 2>&1 | grep CONSOLE",
     "dev": "NODE_ENV=dev gulp make",
-    "watch": "NODE_ENV=dev gulp watch",
+    "watch": "NODE_ENV=dev gulp watch --url",
     "dev-server": "node ./test/server/index.js",
     "production": "NODE_ENV=production gulp make",
     "deploy": "NODE_ENV=production gulp deploy"

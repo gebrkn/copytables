@@ -5,62 +5,94 @@ $accent: #1e88ff
 $hot: #f0a340
 $button: #eaeaea
 
-$no-trans: all 0s 0s !important
+$i: !important
+$no-trans: all 0s 0s $i
 
 [data-copytables-locked]
     transition: $no-trans
 
 [data-copytables-selected]:not([data-copytables-locked])
-    background: Highlight !important
+    background: Highlight $i
     transition: $no-trans
-
 
 [data-copytables-marked]:not([data-copytables-locked])
-    background: Highlight !important
+    background: Highlight $i
     transition: $no-trans
 
+$ib-unit: 6px
+$ib-cross: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAOCAYAAADwikbvAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJBJREFUeNpi+P//PwMQJ/yHgAQoHxc2AOIPQLwAxIcJIIMEAhphoAAmsYCAAegaLwCxALICXAZg1QhzNj4DGnBpxKYZmwFYNeLSDMIb0DQ+QNeISzO6H3HGAiGNH/AZQDA68EUjIY14oxEkoUBAIy4DAhigCi8Q0IhuAMgyA5igADRBCBDIGCBcAPUmA0CAAQBKdcyyRXBPAgAAAABJRU5ErkJggg=='
 
 html > body > div.__copytables_infobar__
-    position: fixed !important
-    top: -100px !important
-    left: 0 !important
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important
-    z-index: 2147483647 !important
-    background: rgba($accent, 0.8) !important
-    border-bottom-right-radius: 12px  !important
-    transition: top 0.5s, visibility 0s 0.5s !important
-    padding: 12px 6px 12px 30px !important
-    visibility: hidden !important
+    position: fixed $i
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif $i
+    z-index: 2147483647 $i
+    background: rgba($accent, 0.95) $i
+    padding-top: $ib-unit * 2  $i
+    padding-bottom: $ib-unit * 2  $i
+    opacity: 0  $i
+    visibility: hidden  $i
+    transition: opacity 0.5s, visibility 0s 0.5s  $i
 
-    &.active
-        top: 0 !important
-        visibility: visible !important
-        transition: top 0.5s, visibility 0s !important
+    &.__copytables_infobar__active
+        opacity: 1 $i
+        visibility: visible $i
+        transition: opacity 0.5s, visibility 0s $i
 
     > div
-        display: inline-block !important
 
         > span
-            display: inline-block !important
-            border-radius: 6px !important
-            padding: 4px 8px !important
-            margin: 0 6px !important
-            background: $button !important
-            color: black !important
-            font-size: 12px !important
+            display: inline-block $i
+            border-radius: 6px $i
+            padding: 4px 8px $i
+            margin: 0 6px 0 0 $i
+            background: $button $i
+            color: black $i
+            font-size: 12px $i
 
             > span:first-child
-                font-weight: 200 !important
+                font-weight: 200 $i
 
             > span:last-child
-                font-weight: 800 !important
+                font-weight: 800 $i
 
-    > div:last-child
-        position: absolute !important
-        left: 10px !important
-        top: 3px !important
-        font-weight: 200 !important
-        font-size: 20px !important
-        line-height: 38px !important
-        color: white !important
-        cursor: pointer !important
+    > span
+        position: absolute $i
+        top: 0 $i
+        height: 100% $i
+        width: $ib-unit * 7 $i
+        cursor: pointer $i
+        background: url($ib-cross) center center no-repeat $i
+        opacity: 0.8 $i
+
+        &:hover
+            opacity: 1 $i
+
+    &.__copytables_infobar__lt, &.__copytables_infobar__lb
+        left: 0 $i
+        padding-left: $ib-unit * 7 $i
+        padding-right: $ib-unit $i
+        > span
+            left: 0 $i
+
+    &.__copytables_infobar__lt
+        top: 0 $i
+        border-bottom-right-radius: $ib-unit * 2 $i
+
+    &.__copytables_infobar__lb
+        bottom: 0 $i
+        border-top-right-radius: $ib-unit * 2 $i
+
+    &.__copytables_infobar__rt, &.__copytables_infobar__rb
+        right: 0 $i
+        padding-right: $ib-unit * 7 $i
+        padding-left: $ib-unit * 2 $i
+        > span
+            right: 0 $i
+
+    &.__copytables_infobar__rt
+        top: 0 $i
+        border-bottom-left-radius: $ib-unit * 2 $i
+
+    &.__copytables_infobar__rb
+        bottom: 0 $i
+        border-top-left-radius: $ib-unit * 2 $i

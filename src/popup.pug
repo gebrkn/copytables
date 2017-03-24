@@ -10,25 +10,23 @@ html
                 td
                     b Copy:
                 td
-                    span#copy-commands
+                    span#copy-buttons
+
             tr
                 td
                     b Find:
                 td
-                    button(data-command="findPreviousTable") Previous Table
-                    button(data-command="findNextTable") Next Table
-            tr#capture-commands
+                    button(data-command="find_previous") Previous Table
+                    button(data-command="find_next") Next Table
+
+            tr#capture-row
                 td
                     b Capture:
                 td
-                    button(data-command="captureOff") Off
-                    button(data-command="captureCell") Cells
-                    button(data-command="captureColumn") Columns
-                    button(data-command="captureRow") Rows
-                    button(data-command="captureTable") Tables
+                    span#capture-buttons
 
         div
             p
-                a(data-command="openOptionsPage") Options
+                a(data-command="open_options") Options
             p
-                a(data-command="openConfigureCommands") Keyboard shortcuts
+                a(data-command="open_commands") Keyboard shortcuts

@@ -15,10 +15,9 @@ var
     selection = require('./selection'),
     table = require('./table'),
     loader = require('./loader')
-    ;
+;
 
 var mouseButton = 0,
-    captureModes = ['cell', 'column', 'row', 'table'],
     currentCapture = null;
 
 function parseEvent(evt) {
@@ -30,13 +29,13 @@ function parseEvent(evt) {
 
     if (!key.scan.code && mods) {
 
-        var cap = util.first(captureModes, function (m) {
-            return kmods === preferences.int('modifier.' + m);
+        var cap = util.first(preferences.captureModes(), function (m) {
+            return kmods === preferences.int('modifier.' + m.id);
         });
 
         if (cap) {
-            console.log('got modifier', cap, mods & emod)
-            return [cap, mods & emod];
+            console.log('got modifier', cap.id, mods & emod);
+            return [cap.id, mods & emod];
         }
     }
 
@@ -136,7 +135,9 @@ var messageListeners = {
         selection.drop();
     },
 
-    preferencesUpdated: preferences.load,
+    preferencesUpdated: function () {
+        preferences.load().then(infobar.updatePosition);
+    },
 
     enumTables: function (msg) {
         return table.enum(selection.table());
