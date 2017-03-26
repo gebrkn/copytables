@@ -5,13 +5,14 @@ var M = module.exports = {};
 var dom = require('../lib/dom'),
     cell = require('../lib/cell'),
     event = require('../lib/event'),
+    message = require('../lib/message'),
     preferences = require('../lib/preferences'),
     util = require('../lib/util'),
 
     infobar = require('./infobar'),
     table = require('./table'),
     scroller = require('./scroller')
-    ;
+;
 
 M.Capture = function () {
     this.anchorPoint = null;
@@ -68,6 +69,32 @@ M.Capture.prototype.setLocked = function (rect, canSelect) {
     });
 };
 
+M.Capture.prototype.selection = function () {
+    var self = this,
+        tds = cell.findWithSelection(self.table);
+
+    if (!self.selectedCells) {
+        return [true, self.selectedCells = tds];
+    }
+
+    if (tds.length !== self.selectedCells.length) {
+        return [true, self.selectedCells = tds];
+    }
+
+    var eq = true;
+
+    tds.forEach(function (td, i) {
+        eq = eq && td === self.selectedCells[i];
+    });
+
+    if (!eq) {
+        return [true, self.selectedCells = tds];
+    }
+
+    return [false, self.selectedCells];
+};
+
+
 M.Capture.prototype.start = function (evt, mode, extend) {
 
     var t = table.locate(evt.target);
@@ -76,7 +103,9 @@ M.Capture.prototype.start = function (evt, mode, extend) {
     this.scroller = new scroller.Scroller(t.td);
     this.mode = mode;
     this.extend = extend;
-    this.infoBar = preferences.val('infobar.enabled');
+    this.infoBar = preferences.val('infobar.enabled') ?
+        (preferences.val('infobar.allframes') ? 2 : 1) : 0;
+    this.selectedCells = null;
 
     if (!this.anchorPoint)
         extend = false;
@@ -95,8 +124,18 @@ M.Capture.prototype.start = function (evt, mode, extend) {
         self.scroller.scroll(evt);
         self.setCaptured(self.markRect(evt));
 
-        if (self.infoBar)
-            infobar.show(cell.find('marked,selected', self.table));
+        if (self.infoBar) {
+            var sel = self.selection();
+
+            if (sel[0]) {
+                var data = infobar.data(sel[1]);
+                if(self.infoBar === 2) {
+                    infobar.show(data)
+                } else {
+                    message.background({name: 'showInfoBar', data: data});
+                }
+            }
+        }
 
         if (!mouseIsDown) {
             self.onDone(self.table);

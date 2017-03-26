@@ -21,7 +21,6 @@ function captureButtons() {
 }
 
 function copyButtons() {
-    console.log(preferences.copyFormats())
     return preferences.copyFormats().filter(function (f) {
         return f.enabled;
     }).map(function (f) {

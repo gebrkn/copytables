@@ -9,7 +9,7 @@ function listTables() {
     var all = [];
 
     dom.find('table').forEach(function (tbl, n) {
-        if (!dom.cells(tbl).length)
+        if (!dom.cells(tbl).length || !dom.visible(tbl))
             return;
         all.push({
             index: n,
@@ -18,7 +18,7 @@ function listTables() {
     });
 
     return all;
-};
+}
 
 M.locate = function (el) {
     var td = dom.closest(el, 'td, th'),
@@ -56,7 +56,7 @@ M.enum = function (selectedTable) {
         delete r.table;
         return r;
     });
-}
+};
 
 M.rawContent = function (tbl) {
     var c = {

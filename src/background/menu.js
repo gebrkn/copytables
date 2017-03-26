@@ -34,7 +34,7 @@ var mainMenu = {
         },
         {
             id: 'copyAs',
-            title: 'Copy As...'
+            title: 'Copy...'
         }
     ]
 };

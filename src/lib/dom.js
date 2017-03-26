@@ -14,6 +14,10 @@ M.is = function (el, sel) {
     return el && el.matches && el.matches(sel);
 };
 
+M.visible = function(el) {
+    return el && !!(el.offsetHeight || el.offsetWidth);
+};
+
 M.findOne = function (sel, where) {
     return (where || document).querySelector(sel);
 };

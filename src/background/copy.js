@@ -1,6 +1,8 @@
 var M = module.exports = {};
 
-var matrix = require('../lib/matrix'),
+var content = require('./content'),
+
+    matrix = require('../lib/matrix'),
     util = require('../lib/util')
     ;
 
@@ -54,39 +56,47 @@ function asCSV(mat) {
     }).join('\n');
 }
 
-M.richHTMLCSS = function (content) {
-    return richCopy(content.HTMLCSS);
+M.richHTMLCSS = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return richCopy(c.HTMLCSS);
 };
 
-M.richHTML = function (content) {
-    return richCopy(content.HTML);
+M.richHTML = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return richCopy(c.HTML);
 };
 
-M.textTabs = function (content) {
-    return textCopy(asTabs(content.textMatrix));
+M.textTabs = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return textCopy(asTabs(c.textMatrix));
 };
 
-M.textCSV = function (content) {
-    return textCopy(asCSV(content.textMatrix));
+M.textCSV = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return textCopy(asCSV(c.textMatrix));
 };
 
-M.textTabsSwap = function (content) {
-    return textCopy(asTabs(matrix.transpose(content.textMatrix)));
+M.textTabsSwap = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return textCopy(asTabs(matrix.transpose(c.textMatrix)));
 };
 
-M.textCSV = function (content) {
-    return textCopy(asCSV(content.textMatrix));
+M.textCSV = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return textCopy(asCSV(c.textMatrix));
 };
 
-M.textCSVSwap = function (content) {
-    return textCopy(asCSV(matrix.transpose(content.textMatrix)));
+M.textCSVSwap = function (c, useSelection) {
+    c = content.prepare(c, useSelection, true);
+    return textCopy(asCSV(matrix.transpose(c.textMatrix)));
 };
 
-M.textHTML = function (content) {
-    return textCopy(content.HTML);
+M.textHTML = function (c, useSelection) {
+    c = content.prepare(c, useSelection, false);
+    return textCopy(util.reduceWhitespace(c.HTML));
 };
 
-M.textHTMLCSS = function (content) {
-    return textCopy(content.HTMLCSS);
+M.textHTMLCSS = function (c, useSelection) {
+    c = content.prepare(c, useSelection, false);
+    return textCopy(util.reduceWhitespace(c.HTMLCSS));
 };
-

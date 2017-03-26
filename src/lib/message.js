@@ -98,6 +98,19 @@ M.allFrames = function (msg) {
     });
 };
 
+M.topFrame = function (msg) {
+    console.log('MESSAGE: topFrame', msg);
+    msg = convertMessage(msg);
+    return M.enumFrames('active').then(function (frames) {
+        var top = frames.filter(function (f) {
+            return f.frameId === 0;
+        });
+        if (top.length) {
+            return toFrame(msg, top[0]);
+        }
+    });
+};
+
 M.broadcast = function (msg) {
     console.log('MESSAGE: broadcast', msg);
     msg = convertMessage(msg);

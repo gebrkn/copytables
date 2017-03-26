@@ -43,25 +43,25 @@
     },
     "options_page": "options.html",
     "commands": {
-        "findPreviousTable": {
+        "find_previous": {
             "description": "Find previous table"
         },
-        "findNextTable": {
+        "find_next": {
             "description": "Find next table"
         },
-        "captureOff": {
+        "capture_off": {
             "description": "Turn off the capture"
         },
-        "captureCell": {
+        "capture_cell": {
             "description": "Capture cells"
         },
-        "captureColumn": {
+        "capture_column": {
             "description": "Capture columns"
         },
-        "captureRow": {
+        "capture_row": {
             "description": "Capture rows"
         },
-        "captureTable": {
+        "capture_table": {
             "description": "Capture tables"
         }
 

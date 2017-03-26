@@ -6,43 +6,42 @@ var dom = require('../lib/dom'),
     message = require('../lib/message'),
     cell = require('../lib/cell'),
     table = require('./table')
-    ;
+;
 
 function cellsToSelect(el, mode) {
+    if (mode === 'table') {
+        var tbl = dom.closest(el, 'table');
+        return tbl ? dom.cells(tbl) : [];
+    }
+
     var t = table.locate(el);
 
-    if (!t)
+    if (!t) {
         return [];
+    }
 
-    var tds = [],
-        sel = dom.bounds(t.td);
+    if (mode === 'cell') {
+        return [t.td];
+    }
 
-    dom.cells(t.table).forEach(function (td) {
-        var b = dom.bounds(td),
-            ok = false;
+    var sel = dom.bounds(t.td);
+
+    return dom.cells(t.table).filter(function (td) {
+        var b = dom.bounds(td);
 
         switch (mode) {
             case 'column':
-                ok = sel.x == b.x;
-                break;
+                return sel.x === b.x;
             case 'row':
-                ok = sel.y == b.y;
-                break;
-            case 'table':
-                ok = true;
-                break;
-        }
-
-        if (ok) {
-            tds.push(td);
+                return sel.y === b.y;
         }
     });
-    return tds;
 }
 
+var excludeElements = 'a, input, button, textarea, select, img';
 
 M.selectable = function (el) {
-    return !!(el && dom.closest(el, 'table') && !dom.closest(el, 'a, input, button'));
+    return !!(el && dom.closest(el, 'table') && !dom.closest(el, excludeElements));
 };
 
 M.selected = function (el) {
@@ -52,7 +51,7 @@ M.selected = function (el) {
 
 M.drop = function () {
     dom.find('td, th').forEach(cell.reset);
-}
+};
 
 M.active = function () {
     return !!cell.find('selected').length;
@@ -81,7 +80,7 @@ M.start = function (el) {
 };
 
 M.select = function (el, mode) {
-    if(dom.is(el, 'table'))
+    if (dom.is(el, 'table'))
         el = dom.cells(el)[0];
     if (el && M.start(el)) {
         var tds = cellsToSelect(el, mode);
@@ -90,7 +89,7 @@ M.select = function (el, mode) {
 };
 
 M.toggle = function (el, mode) {
-    if(dom.is(el, 'table'))
+    if (dom.is(el, 'table'))
         el = dom.cells(el)[0];
     if (el && M.start(el)) {
         var tds = cellsToSelect(el, mode),

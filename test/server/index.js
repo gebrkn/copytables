@@ -14,17 +14,17 @@ Number.prototype.times = function (fn) {
 let file = path => fs.readFileSync(path, 'utf8');
 
 let renderTemplate = tpl => mustache.render(
-    file(`${__dirname}/tpl_${tpl}.html`),
+    file(`${__dirname}/templates/${tpl}.html`),
     {
         text: caesar(),
         table: function () {
             return function (text, render) {
                 var m = text.match(/(\d+)x(\d+)/);
                 var s = '';
-                Number(m[1]).times(function(r) {
+                Number(m[1]).times(function (r) {
                     s += '<tr>';
-                    Number(m[2]).times(function(c) {
-                        s += `<td>${r+1}.${c+1}</td>`;
+                    Number(m[2]).times(function (c) {
+                        s += `<td>${r + 1}.${c + 1}</td>`;
                     });
                     s += '</tr>';
                 });
@@ -82,17 +82,16 @@ app.get('/raw/:tpl', (req, res, next) => {
 
 
 app.get('/all', (req, res, next) => {
-    let content = '';
+    let content = '',
+        all = 'simple spans forms hidden framea nested scroll frameb styled frameset big';
 
-    glob(__dirname + '/tpl*.html', (err, ls) => {
-        ls.forEach(path => {
-            let tpl = path.match(/tpl_(\w+)/)[1];
-            content += `<h2>${tpl}</h2>`;
-            content += renderTemplate(tpl);
-            content += caesar();
-        });
-        res.send(renderDoc(content));
+    all.split(' ').forEach(tpl => {
+        content += `<h2>${tpl}</h2>`;
+        content += renderTemplate(tpl);
+        content += caesar();
     });
+
+    res.send(renderDoc(content));
 });
 
 app.listen(9876);

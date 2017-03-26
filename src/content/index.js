@@ -135,6 +135,10 @@ var messageListeners = {
         selection.drop();
     },
 
+    showInfoBar: function(msg) {
+        msg.data ? infobar.show(msg.data) : infobar.hide();
+    },
+
     preferencesUpdated: function () {
         preferences.load().then(infobar.updatePosition);
     },

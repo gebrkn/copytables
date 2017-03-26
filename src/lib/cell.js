@@ -54,10 +54,15 @@ M.unlock = function (td) {
     return M.clear(td, 'locked');
 };
 
-M.find = function (state, where) {
-    var sel = state.split(',').map(function (s) {
+M.find = function (states, where) {
+    var sel = states.split(',').map(function (s) {
         return '[' + prefix + s.trim() + ']'
     }).join(',');
+    return dom.find(sel, where);
+};
+
+M.findWithSelection = function(where) {
+    var sel = '[{}selected]:not([{}locked]), [{}marked]:not([{}locked])'.replace(/{}/g, prefix);
     return dom.find(sel, where);
 };
 

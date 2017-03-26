@@ -1,4 +1,3 @@
-
 var M = module.exports = {};
 
 var dom = require('../lib/dom'),
@@ -6,7 +5,7 @@ var dom = require('../lib/dom'),
     util = require('../lib/util'),
     css = require('../lib/css'),
     cell = require('../lib/cell')
-    ;
+;
 
 function toMatrix(tbl) {
     var tds = {},
@@ -97,7 +96,7 @@ function trim(tbl) {
             dom.attr(node.td, 'colSpan', node.colSpan ? (node.colSpan + 1) : null);
         }
     });
-};
+}
 
 
 function fixRelativeLinks(doc, el) {
@@ -123,8 +122,22 @@ function fixRelativeLinks(doc, el) {
     fix('OBJECT', ['classid', 'codebase', 'data', 'usemap']);
 }
 
+function removeHiddenElements(node) {
+    var hidden = [];
 
-M.prepare = function (content, useSelection) {
+    dom.find('*', node).forEach(function(el) {
+        if(!dom.visible(el)) {
+            hidden.push(el);
+        }
+    });
+
+    if(hidden.length) {
+        console.log('removeHidden: ' + hidden.length);
+        dom.remove(hidden);
+    }
+}
+
+M.prepare = function (content, useSelection, removeHidden) {
 
     var frame = document.createElement('IFRAME');
     frame.setAttribute('sandbox', 'allow-same-origin');
@@ -162,6 +175,10 @@ M.prepare = function (content, useSelection) {
         }
         dom.removeAttr(el, 'data-copytables-uid');
     });
+
+    if (removeHidden) {
+        removeHiddenElements(div);
+    }
 
     content.HTMLCSS = div.innerHTML;
 

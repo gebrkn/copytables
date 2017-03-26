@@ -81,7 +81,7 @@ html
                 tr
                     td: b Keyboard shortcuts
                     td
-                        a(href="#" data-command="openConfigureCommands") Configure
+                        a(href="#" data-command="open_commands") Configure
 
 
         h2 Copy formats
@@ -107,6 +107,14 @@ html
                     td
                         label.cb
                             input(type="checkbox" data-bool="infobar.reset")
+                            span Yes
+                tr
+                    td
+                        b Framed
+                        i In a multi-frame document, display the infobar within frames.
+                    td
+                        label.cb
+                            input(type="checkbox" data-bool="infobar.allframes")
                             span Yes
                 tr
                     td
@@ -144,5 +152,5 @@ html
                 | &nbsp;|&nbsp;
                 a(href="https://github.com/gebrkn/copytables") Source code
                 | &nbsp;|&nbsp;
-                | &copy; 2014~present Georg Barikin
+                | &copy; 2014~present Georg Barikin georg@merribithouse.net
 

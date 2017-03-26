@@ -68,7 +68,7 @@ var copyFormats = [
     },
     {
         "id": "richHTML",
-        "name": "Plain",
+        "name": "Plain Table",
         "desc": "Copy the table without formatting"
     },
     {

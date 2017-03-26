@@ -7,12 +7,11 @@ var
 
     menu = require('./menu'),
     copy = require('./copy'),
-    content = require('./content'),
     helpers = require('./helpers')
     ;
 
 function findTableCommand(direction, sender) {
-    console.log('findTableCommand', sender)
+    console.log('findTableCommand', direction, sender);
 
     if (!sender) {
         return helpers.findTable(direction);
@@ -28,15 +27,18 @@ function findTableCommand(direction, sender) {
 };
 
 function copyCommand(format, sender) {
+    console.log('copyCommand', format, sender);
+
     message.allFrames('contentFromSelection').then(function (res) {
 
         var data = res.map(function (r) {
             return r.data;
         }).filter(Boolean);
 
+        console.log('contentFromSelection', data.length);
+
         if (data.length) {
-            var d = content.prepare(data[0], true);
-            return copy[format](d);
+            return copy[format](data[0], true);
         }
     });
 };

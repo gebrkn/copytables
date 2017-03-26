@@ -3,7 +3,8 @@
 var M = module.exports = {};
 
 var dom = require('../lib/dom'),
-    preferences = require('../lib/preferences');
+    preferences = require('../lib/preferences'),
+    util = require('../lib/util');
 
 var barElement = null,
     showTimer = 0,
@@ -46,7 +47,7 @@ function sum(values) {
 }
 
 function format(n) {
-    return n.toLocaleString();
+    return Number(n.toFixed(2)).toLocaleString();
 }
 
 var compute = {
@@ -86,7 +87,7 @@ function textContent(node, c) {
         return;
     }
 
-    if (!node.offsetWidth) {
+    if (!dom.visible(node)) {
         return;
     }
 
@@ -107,12 +108,14 @@ function numberValue(t) {
         t = m[1];
     }
 
-    var n = Number(t.replace(/[^\d-]/g, ''));
+    var p = Number(t.replace(/[^\d-]/g, '')),
+        q = Number(p + '.' + f);
 
-    if (Number.isNaN(n))
+    if (Number.isNaN(q)) {
         return null;
+    }
 
-    return Number(n + '.' + f);
+    return q;
 }
 
 function getValue(td) {
@@ -131,17 +134,26 @@ function getValue(td) {
     return val;
 }
 
+M.data = function (cells) {
+    if (!cells.length) {
+        return null;
+    }
 
-M.show = function (cells) {
     var values = [];
 
     cells.forEach(function (td) {
         values.push(getValue(td));
     });
 
-    var html = preferences.infoFunctions().map(function (f) {
-        var res = compute[f.id](values) || 0;
-        return '<span><span>' + f.name + '</span> <span>' + res + ' </span></span>';
+    return preferences.infoFunctions().map(function (f) {
+        return {name: f.name, value: compute[f.id](values) || 0};
+    });
+};
+
+
+M.show = function (data) {
+    var html = data.map(function (c) {
+        return util.format('<span><span>${name}</span> <span>${value}</span></span>', c);
     }).join('');
 
     bar().firstChild.innerHTML = html;

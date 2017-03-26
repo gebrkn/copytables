@@ -17,6 +17,10 @@ var messageListeners = {
         message.allFrames('dropSelection');
     },
 
+    showInfoBar: function(msg) {
+        message.topFrame(msg);
+    },
+
     dropOtherSelections: function (msg) {
         message.enumFrames('active').then(function (frames) {
             frames.forEach(function (frame) {
