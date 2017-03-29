@@ -61,13 +61,13 @@ M.find = function (states, where) {
     return dom.find(sel, where);
 };
 
-M.findWithSelection = function(where) {
+M.findWithSelection = function (where) {
     var sel = '[{}selected]:not([{}locked]), [{}marked]:not([{}locked])'.replace(/{}/g, prefix);
     return dom.find(sel, where);
 };
 
 M.reset = function (td) {
-    td.removeAttribute('data-copytables-selected');
-    td.removeAttribute('data-copytables-marked');
-    td.removeAttribute('data-copytables-locked');
+    td.removeAttribute(prefix + 'selected');
+    td.removeAttribute(prefix + 'marked');
+    td.removeAttribute(prefix + 'locked');
 };

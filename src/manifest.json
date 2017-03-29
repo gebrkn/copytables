@@ -23,6 +23,7 @@
         "persistent": false
     },
     "permissions": [
+        "clipboardRead",
         "clipboardWrite",
         "contextMenus",
         "webNavigation",

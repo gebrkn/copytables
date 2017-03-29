@@ -8,8 +8,9 @@ $button: #eaeaea
 $i: !important
 $no-trans: all 0s 0s $i
 
-[data-copytables-locked]
-    transition: $no-trans
+body[data-copytables-wait],
+body[data-copytables-wait] *
+    cursor: wait  $i
 
 [data-copytables-selected]:not([data-copytables-locked])
     background: Highlight $i

@@ -3,7 +3,6 @@ var M = module.exports = {};
 var dom = require('../lib/dom'),
     matrix = require('../lib/matrix'),
     util = require('../lib/util'),
-    css = require('../lib/css'),
     cell = require('../lib/cell')
 ;
 
@@ -40,6 +39,7 @@ function toMatrix(tbl) {
             if (row[ni + i] && !row[ni + i].td)
                 row[ni + i].colRef = node;
         }
+
         for (var i = 1; i < rs; i++) {
             if (mat[ri + i] && mat[ri + i][ni] && !mat[ri + i][ni].td)
                 mat[ri + i][ni].rowRef = node;
@@ -98,7 +98,6 @@ function trim(tbl) {
     });
 }
 
-
 function fixRelativeLinks(doc, el) {
 
     function fix(tags, attrs) {
@@ -125,75 +124,85 @@ function fixRelativeLinks(doc, el) {
 function removeHiddenElements(node) {
     var hidden = [];
 
-    dom.find('*', node).forEach(function(el) {
-        if(!dom.visible(el)) {
+    dom.find('*', node).forEach(function (el) {
+        if (!dom.visible(el)) {
             hidden.push(el);
         }
     });
 
-    if(hidden.length) {
+    if (hidden.length) {
         console.log('removeHidden: ' + hidden.length);
         dom.remove(hidden);
     }
 }
 
-M.prepare = function (content, useSelection, removeHidden) {
+M.table = function (url) {
+    var _ts = new Date();
 
-    var frame = document.createElement('IFRAME');
-    frame.setAttribute('sandbox', 'allow-same-origin');
-    document.body.appendChild(frame);
+    console.log('new paste.table', url);
 
-    var doc = frame.contentDocument,
-        body = doc.body;
+    this.frame = document.createElement('IFRAME');
+    this.frame.setAttribute('sandbox', 'allow-same-origin');
+    document.body.appendChild(this.frame);
 
-    var base = doc.createElement('BASE');
-    dom.attr(base, 'href', content.url);
-    body.appendChild(base);
+    this.doc = this.frame.contentDocument;
+    this.body = this.doc.body;
 
-    var div = doc.createElement('DIV');
-    div.innerHTML = content.rawHTML;
-    body.appendChild(div);
+    var base = this.doc.createElement('BASE');
+    dom.attr(base, 'href', url);
+    this.body.appendChild(base);
 
-    var tbl = div.firstChild;
+    this.div = this.doc.createElement('DIV');
+    this.div.contentEditable = true;
+    this.body.appendChild(this.div);
 
-    dom.findSelf('*', tbl).forEach(function (el) {
-        dom.removeAttr(el, 'style');
-    });
+    this.div.focus();
+    this.doc.execCommand('paste');
 
-    if (useSelection) {
-        trim(tbl);
+    this.table = this.div.firstChild;
+
+    if (!this.table || this.table.tagName !== 'TABLE') {
+        throw 'no table pasted';
     }
 
-    fixRelativeLinks(doc, tbl);
-
-    dom.cells(tbl).forEach(cell.reset);
-
-    dom.findSelf('*', tbl).forEach(function (el) {
-        var uid = dom.attr(el, 'data-copytables-uid');
-        if (el.style) {
-            el.style.cssText = css.compute(css.read(el), content.css[uid]);
-        }
-        dom.removeAttr(el, 'data-copytables-uid');
-    });
-
-    if (removeHidden) {
-        removeHiddenElements(div);
-    }
-
-    content.HTMLCSS = div.innerHTML;
-
-    dom.findSelf('*', tbl).forEach(function (el) {
-        dom.removeAttr(el, 'style');
-    });
-
-    content.HTML = div.innerHTML;
-
-    content.textMatrix = matrix.map(toMatrix(tbl), function (_, node) {
-        return node.td ? node.td.textContent : '';
-    });
-
-    document.body.removeChild(frame);
-    return content;
+    console.log('new paste.table: ' + ((new Date()) - _ts));
 };
 
+M.table.prototype.prepare = function (options) {
 
+    var _ts = new Date();
+
+    if (options.useSelection) {
+        trim(this.table);
+    }
+
+    fixRelativeLinks(this.doc, this.table);
+    dom.cells(this.table).forEach(cell.reset);
+
+    // if (options.removeHidden) {
+    //     removeHiddenElements(this.div);
+    // }
+
+    if (options.removeStyles) {
+        dom.findSelf('*', this.table).forEach(function (el) {
+            dom.removeAttr(el, 'style');
+            dom.removeAttr(el, 'class');
+        });
+    }
+
+    console.log('paste.prepare: ' + ((new Date()) - _ts));
+};
+
+M.table.prototype.html = function () {
+    return this.div.innerHTML;
+};
+
+M.table.prototype.textMatrix = function () {
+    return matrix.map(toMatrix(this.table), function (_, node) {
+        return node.td ? node.td.textContent : '';
+    });
+};
+
+M.table.prototype.destroy = function () {
+    document.body.removeChild(this.frame);
+};

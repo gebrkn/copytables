@@ -1,7 +1,6 @@
 var M = module.exports = {};
 
 var dom = require('../lib/dom'),
-    css = require('../lib/css'),
     cell = require('../lib/cell')
     ;
 
@@ -46,7 +45,7 @@ M.byIndex = function (index) {
             res = r.table;
     });
 
-    console.log('byIndex', res)
+    console.log('byIndex', res);
     return res;
 };
 
@@ -58,33 +57,30 @@ M.enum = function (selectedTable) {
     });
 };
 
-M.rawContent = function (tbl) {
-    var c = {
-        url: document.location.href,
-        css: {},
-        rawHTML: ''
-    };
+M.copy = function (tbl) {
+    var _ts = new Date();
 
-    dom.findSelf('*', tbl).forEach(function (el, uid) {
-        var sel = cell.selected(el);
-        if (sel) {
-            // lock it to remove background without firing off an animation
-            cell.lock(el);
-        }
-        dom.attr(el, 'data-copytables-uid', uid);
-        c.css[uid] = css.read(el);
-        if (sel) {
-            cell.unlock(el);
+    dom.cells(tbl).forEach(function(td) {
+        if(cell.selected(td)) {
+            cell.lock(td)
         }
     });
 
-    c.rawHTML = tbl.outerHTML;
+    var range = document.createRange();
+    range.selectNodeContents(tbl);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
 
-    dom.findSelf('*', tbl).forEach(function (el) {
-        dom.removeAttr(el, 'data-copytables-uid');
+    dom.cells(tbl).forEach(function(td) {
+        if(cell.selected(td)) {
+            cell.unlock(td)
+        }
     });
 
-    return c;
+    console.log('content.copy: ' + ((new Date()) - _ts));
 };
 
 M.selectCaptured = function (tbl) {

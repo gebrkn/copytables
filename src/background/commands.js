@@ -8,7 +8,7 @@ var
     menu = require('./menu'),
     copy = require('./copy'),
     helpers = require('./helpers')
-    ;
+;
 
 function findTableCommand(direction, sender) {
     console.log('findTableCommand', direction, sender);
@@ -24,22 +24,23 @@ function findTableCommand(direction, sender) {
             helpers.findTable(direction);
         }
     })
-};
+}
 
 function copyCommand(format, sender) {
+    var _ts = new Date();
+
     console.log('copyCommand', format, sender);
 
-    message.allFrames('contentFromSelection').then(function (res) {
+    message.allFrames('beginCopy').then(function (res) {
+        res.some(function (r) {
+            if (r.data) {
+                copy[format](r.receiver.url);
+                return true;
+            }
+        });
 
-        var data = res.map(function (r) {
-            return r.data;
-        }).filter(Boolean);
-
-        console.log('contentFromSelection', data.length);
-
-        if (data.length) {
-            return copy[format](data[0], true);
-        }
+        message.allFrames('endCopy');
+        console.log('copyCommand: ' + ((new Date()) - _ts));
     });
 };
 
@@ -69,7 +70,7 @@ M.exec = function (cmd, sender) {
 
     console.log('GOT COMMAND', cmd, sender);
 
-    if(sender && typeof sender.tabId === 'undefined') {
+    if (sender && typeof sender.tabId === 'undefined') {
         sender = null; // this comes from the popup
     }
 

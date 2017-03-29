@@ -81,13 +81,16 @@ function startCapture(evt, mode, extend) {
     }
 
     currentCapture = currentCapture || new capture.Capture();
-    console.log('currentCapture', currentCapture)
 
     currentCapture.onDone = captureDone;
 
     selection.start(evt.target);
     currentCapture.start(evt, mode, extend);
 }
+
+var copyLock = false,
+    copyWaitTimeout = 500,
+    copyWaitTimer = 0;
 
 var eventListeners = {
     mousedownCapture: function (evt) {
@@ -98,7 +101,7 @@ var eventListeners = {
         }
 
         var p = parseEvent(evt);
-        console.log('parseEvent=', p)
+        console.log('parseEvent=', p);
 
         if (!p || !selection.selectable(evt.target)) {
             message.background('dropAllSelections');
@@ -109,14 +112,15 @@ var eventListeners = {
     },
 
     copy: function (evt) {
-        message.background('genericCopy');
+        if(!copyLock)
+            message.background('genericCopy');
     },
 
     contextmenu: function (evt) {
         event.register(evt);
 
         if (!selection.selectable(evt.target)) {
-            message.background('dropAllSelections')
+            message.background('dropAllSelections');
             message.background({name: 'contextMenu', selectable: false});
             return;
         }
@@ -183,6 +187,27 @@ var messageListeners = {
     contentFromSelection: function () {
         var tbl = selection.table();
         return tbl ? table.rawContent(tbl) : null;
+    },
+
+    beginCopy: function () {
+        copyLock = true;
+
+        copyWaitTimer = setTimeout(function() {
+            dom.attr(document.body, 'data-copytables-wait', 1);
+        }, copyWaitTimeout);
+
+        var tbl = selection.table();
+        if(tbl) {
+            table.copy(tbl);
+            return true;
+        }
+        return false;
+    },
+
+    endCopy: function () {
+        copyLock = false;
+        clearTimeout(copyWaitTimer);
+        dom.removeAttr(document.body, 'data-copytables-wait');
     }
 };
 

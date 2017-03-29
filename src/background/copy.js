@@ -1,12 +1,13 @@
 var M = module.exports = {};
 
-var content = require('./content'),
-
+var paste = require('./paste'),
     matrix = require('../lib/matrix'),
     util = require('../lib/util')
-    ;
+;
 
 function richCopy(text) {
+    var _ts = new Date();
+
     var t = document.createElement('div');
     document.body.appendChild(t);
 
@@ -22,9 +23,13 @@ function richCopy(text) {
 
     document.execCommand('copy');
     document.body.removeChild(t);
+
+    console.log('richCopy', ((new Date()) - _ts));
 }
 
 function textCopy(text) {
+    var _ts = new Date();
+
     var t = document.createElement('textarea');
     document.body.appendChild(t);
 
@@ -34,8 +39,9 @@ function textCopy(text) {
 
     document.execCommand('copy');
     document.body.removeChild(t);
-}
 
+    console.log('textCopy', ((new Date()) - _ts));
+}
 
 function asTabs(mat) {
     return mat.map(function (row) {
@@ -56,47 +62,90 @@ function asCSV(mat) {
     }).join('\n');
 }
 
-M.richHTMLCSS = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return richCopy(c.HTMLCSS);
+M.richHTMLCSS = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: true,
+        removeStyles: false
+    });
+    richCopy(t.html());
+    t.destroy();
 };
 
-M.richHTML = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return richCopy(c.HTML);
+M.richHTML = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: true,
+        removeStyles: true
+    });
+    richCopy(t.html());
+    t.destroy();
 };
 
-M.textTabs = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return textCopy(asTabs(c.textMatrix));
+M.textTabs = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: true,
+        removeStyles: false
+    });
+    textCopy(asTabs(t.textMatrix()));
+    t.destroy();
 };
 
-M.textCSV = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return textCopy(asCSV(c.textMatrix));
+M.textCSV = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: true,
+        removeStyles: false
+    });
+    textCopy(asCSV(t.textMatrix()));
+    t.destroy();
 };
 
-M.textTabsSwap = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return textCopy(asTabs(matrix.transpose(c.textMatrix)));
+M.textTabsSwap = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: true,
+        removeStyles: false
+    });
+    textCopy(asTabs(matrix.transpose(t.textMatrix())));
+    t.destroy();
 };
 
-M.textCSV = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return textCopy(asCSV(c.textMatrix));
+M.textCSVSwap = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: true,
+        removeStyles: false
+    });
+    textCopy(asCSV(matrix.transpose(t.textMatrix())));
+    t.destroy();
 };
 
-M.textCSVSwap = function (c, useSelection) {
-    c = content.prepare(c, useSelection, true);
-    return textCopy(asCSV(matrix.transpose(c.textMatrix)));
+M.textHTML = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: false,
+        removeStyles: true
+    });
+    textCopy(util.reduceWhitespace(t.html()));
+    t.destroy();
 };
 
-M.textHTML = function (c, useSelection) {
-    c = content.prepare(c, useSelection, false);
-    return textCopy(util.reduceWhitespace(c.HTML));
-};
-
-M.textHTMLCSS = function (c, useSelection) {
-    c = content.prepare(c, useSelection, false);
-    return textCopy(util.reduceWhitespace(c.HTMLCSS));
+M.textHTMLCSS = function (url) {
+    var t = new paste.table(url);
+    t.prepare({
+        useSelection: true,
+        removeHidden: false,
+        removeStyles: false
+    });
+    textCopy(util.reduceWhitespace(t.html()));
+    t.destroy();
 };
