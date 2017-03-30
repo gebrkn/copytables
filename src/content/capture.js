@@ -9,7 +9,7 @@ var dom = require('../lib/dom'),
     preferences = require('../lib/preferences'),
     util = require('../lib/util'),
 
-    infobar = require('./infobar'),
+    infobox = require('./infobox'),
     table = require('./table'),
     scroller = require('./scroller')
 ;
@@ -71,7 +71,7 @@ M.Capture.prototype.setLocked = function (rect, canSelect) {
 
 M.Capture.prototype.selection = function () {
     var self = this,
-        tds = cell.findWithSelection(self.table);
+        tds = cell.findSelected(self.table);
 
     if (!self.selectedCells) {
         return [true, self.selectedCells = tds];
@@ -103,9 +103,6 @@ M.Capture.prototype.start = function (evt, mode, extend) {
     this.scroller = new scroller.Scroller(t.td);
     this.mode = mode;
     this.extend = extend;
-    this.infoBar = preferences.val('infobar.enabled') ?
-        (preferences.val('infobar.allframes') ? 2 : 1) : 0;
-    this.selectedCells = null;
 
     if (!this.anchorPoint)
         extend = false;
@@ -123,19 +120,7 @@ M.Capture.prototype.start = function (evt, mode, extend) {
     var tracker = function (mouseIsDown, evt) {
         self.scroller.scroll(evt);
         self.setCaptured(self.markRect(evt));
-
-        if (self.infoBar) {
-            var sel = self.selection();
-
-            if (sel[0]) {
-                var data = infobar.data(sel[1]);
-                if(self.infoBar === 2) {
-                    infobar.show(data)
-                } else {
-                    message.background({name: 'showInfoBar', data: data});
-                }
-            }
-        }
+        infobox.update(self.table);
 
         if (!mouseIsDown) {
             self.onDone(self.table);

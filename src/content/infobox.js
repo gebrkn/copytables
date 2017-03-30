@@ -2,43 +2,10 @@
 
 var M = module.exports = {};
 
-var dom = require('../lib/dom'),
-    preferences = require('../lib/preferences'),
-    util = require('../lib/util');
-
-var barElement = null,
-    showTimer = 0,
-    defaultDelay = 300,
-
-    activeClass = '__copytables_infobar__active';
-
-
-function bar() {
-    if (barElement === null) {
-        barElement = document.createElement('div');
-        barElement.innerHTML = '<div></div><span></span>';
-        barElement.className = '__copytables_infobar__';
-        document.body.appendChild(barElement);
-        barElement.lastChild.addEventListener('click', M.hide);
-    }
-    return barElement;
-}
-
-function show() {
-    if (dom.hasClass(barElement, activeClass)) {
-        return;
-    }
-
-    showTimer = setTimeout(function () {
-        dom.addClass(barElement, activeClass);
-    }, defaultDelay);
-}
-
-function hide() {
-    clearTimeout(showTimer);
-    dom.removeClass(barElement, activeClass);
-}
-
+var cell = require('../lib/cell'),
+    dom = require('../lib/dom'),
+    message = require('../lib/message'),
+    preferences = require('../lib/preferences');
 
 function sum(values) {
     return values.reduce(function (s, v) {
@@ -134,10 +101,17 @@ function getValue(td) {
     return val;
 }
 
-M.data = function (cells) {
-    if (!cells.length) {
+function data(tbl) {
+    if (!tbl) {
         return null;
     }
+
+    var cells = cell.findSelected(tbl);
+
+    if (!cells || !cells.length) {
+        return null;
+    }
+
 
     var values = [];
 
@@ -146,35 +120,15 @@ M.data = function (cells) {
     });
 
     return preferences.infoFunctions().map(function (f) {
-        return {name: f.name, value: compute[f.id](values) || 0};
+        return {title: f.name + ':', message: String(compute[f.id](values) || 0)};
     });
 };
 
-
-M.show = function (data) {
-    var html = data.map(function (c) {
-        return util.format('<span><span>${name}</span> <span>${value}</span></span>', c);
-    }).join('');
-
-    bar().firstChild.innerHTML = html;
-    M.updatePosition();
-    show();
-};
-
-M.hide = function () {
-    hide();
-};
-
-M.updatePosition = function () {
-    if (!barElement)
-        return;
-
-    ['lt', 'rt', 'lb', 'rb'].forEach(function (p) {
-        var cls = '__copytables_infobar__' + p;
-        dom.removeClass(barElement, cls);
-        if (preferences.val('infobar.placement.' + p)) {
-            dom.addClass(barElement, cls);
-        }
-    });
-
+M.update = function (tbl) {
+    if (preferences.val('infobox.enabled')) {
+        message.background({
+            name: 'showInfoBox',
+            data: data(tbl)
+        });
+    }
 };

@@ -8,8 +8,20 @@ var message = require('../lib/message'),
 
     menu = require('./menu'),
     commands = require('./commands'),
+    copy = require('./copy'),
+    notification = require('./notification'),
     helpers = require('./helpers')
-    ;
+;
+
+notification.listen(function(e) {
+    if(e.id === 'infoBox' && e.type === 'buttonClicked' && e.options) {
+        var text = e.options.items.map(function(item) {
+            return item.title + '\t' + item.message;
+        }).join('\n');
+        copy.textCopy(text);
+    }
+});
+
 
 var messageListeners = {
 
@@ -17,8 +29,19 @@ var messageListeners = {
         message.allFrames('dropSelection');
     },
 
-    showInfoBar: function(msg) {
-        message.topFrame(msg);
+    showInfoBox: function (msg) {
+        var opts = {
+            type: 'list',
+            iconUrl: 'ico38.png',
+            title: 'Selection information',
+            message: '',
+            items: msg.data,
+            buttons: [
+                {title: 'Copy'}
+            ]
+        };
+
+        notification.show('infoBox', msg.data ? opts : null);
     },
 
     dropOtherSelections: function (msg) {

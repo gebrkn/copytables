@@ -67,6 +67,17 @@ function load() {
     dom.find('[data-text]').forEach(function (el) {
         el.value = preferences.val(dom.attr(el, 'data-text')) || '';
     });
+
+    chrome.notifications.getPermissionLevel(function(level) {
+        dom.find('[data-notification]').forEach(function(el) {
+            el.style.display = 'none';
+        });
+        console.log(dom.find('[data-notification="' + level + '"]'))
+        dom.find('[data-notification="' + level + '"]').forEach(function(el) {
+            el.style.display = '';
+        });
+    });
+
 }
 
 function save() {

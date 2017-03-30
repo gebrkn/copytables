@@ -27,6 +27,7 @@
         "clipboardWrite",
         "contextMenus",
         "webNavigation",
+        "notifications",
         "storage"
     ],
     "icons": {

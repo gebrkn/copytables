@@ -61,7 +61,7 @@ M.find = function (states, where) {
     return dom.find(sel, where);
 };
 
-M.findWithSelection = function (where) {
+M.findSelected = function (where) {
     var sel = '[{}selected]:not([{}locked]), [{}marked]:not([{}locked])'.replace(/{}/g, prefix);
     return dom.find(sel, where);
 };

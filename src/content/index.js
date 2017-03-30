@@ -11,7 +11,7 @@ var
     util = require('../lib/util'),
 
     capture = require('./capture'),
-    infobar = require('./infobar'),
+    infobox = require('./infobox'),
     selection = require('./selection'),
     table = require('./table'),
     loader = require('./loader')
@@ -54,8 +54,6 @@ function destroyCapture() {
 
 function captureDone(tbl) {
     table.selectCaptured(tbl);
-    if (preferences.val('infobar.reset'))
-        infobar.hide();
     if (preferences.val('capture.reset')) {
         preferences.set('_captureMode', '').then(function () {
             message.background('preferencesUpdated');
@@ -112,7 +110,7 @@ var eventListeners = {
     },
 
     copy: function (evt) {
-        if(!copyLock)
+        if (!copyLock)
             message.background('genericCopy');
     },
 
@@ -136,16 +134,13 @@ var eventListeners = {
 
 var messageListeners = {
     dropSelection: function () {
-        selection.drop();
+        if (selection.table()) {
+            selection.drop();
+            infobox.update(null);
+        }
     },
 
-    showInfoBar: function(msg) {
-        msg.data ? infobar.show(msg.data) : infobar.hide();
-    },
-
-    preferencesUpdated: function () {
-        preferences.load().then(infobar.updatePosition);
-    },
+    preferencesUpdated: preferences.load,
 
     enumTables: function (msg) {
         return table.enum(selection.table());
@@ -156,6 +151,7 @@ var messageListeners = {
         if (tbl) {
             selection.select(tbl, 'table');
             tbl.scrollIntoView(true);
+            infobox.update(selection.table());
         }
     },
 
@@ -164,12 +160,12 @@ var messageListeners = {
             t = table.locate(el);
 
         if (t) {
-            return selection.toggle(t.td, msg.mode);
-        }
-
-        if (msg.mode === 'table') {
+            selection.toggle(t.td, msg.mode);
+        } else if (msg.mode === 'table') {
             selection.toggle(dom.closest(el, 'table'), 'table');
         }
+
+        infobox.update(selection.table());
     },
 
     tableIndexFromContextMenu: function () {
@@ -178,26 +174,15 @@ var messageListeners = {
         return tbl ? table.indexOf(tbl) : null;
     },
 
-    contentFromContextMenu: function () {
-        var el = event.lastTarget(),
-            tbl = dom.closest(el, 'table');
-        return tbl ? table.rawContent(tbl) : null;
-    },
-
-    contentFromSelection: function () {
-        var tbl = selection.table();
-        return tbl ? table.rawContent(tbl) : null;
-    },
-
     beginCopy: function () {
         copyLock = true;
 
-        copyWaitTimer = setTimeout(function() {
+        copyWaitTimer = setTimeout(function () {
             dom.attr(document.body, 'data-copytables-wait', 1);
         }, copyWaitTimeout);
 
         var tbl = selection.table();
-        if(tbl) {
+        if (tbl) {
             table.copy(tbl);
             return true;
         }

@@ -34,7 +34,7 @@ function copyCommand(format, sender) {
     message.allFrames('beginCopy').then(function (res) {
         res.some(function (r) {
             if (r.data) {
-                copy[format](r.receiver.url);
+                copy.formats[format](r.receiver.url);
                 return true;
             }
         });

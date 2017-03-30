@@ -89,55 +89,21 @@ html
 
         .box#copy-formats
 
-        h2 Infobar
-        h3 Infobar shows useful information about your selection (sum/average of numeric values etc).
+        h2 Infobox
+        h3 Infobox shows useful information about your selection (sum/average of numeric values etc).
 
         .box
             table
-                tr
+                tr(data-notification="denied")
+                    td(colspan=2)
+                        i Infobox uses Chrome notifications. Please allow Copytables to send you notifications.
+
+                tr(data-notification="granted")
                     td: b Enable
                     td
                         label.cb
-                            input(type="checkbox" data-bool="infobar.enabled")
+                            input(type="checkbox" data-bool="infobox.enabled")
                             span Yes
-                tr
-                    td
-                        b Auto-hide
-                        i Hide the infobar after selecting.
-                    td
-                        label.cb
-                            input(type="checkbox" data-bool="infobar.reset")
-                            span Yes
-                tr
-                    td
-                        b Framed
-                        i In a multi-frame document, display the infobar within frames.
-                    td
-                        label.cb
-                            input(type="checkbox" data-bool="infobar.allframes")
-                            span Yes
-                tr
-                    td
-                        b Placement
-                    td
-                        table#placement
-                            tr
-                                td.lt
-                                    .placement-box
-                                        .placement-bar
-                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.lt")
-                                td.lb
-                                    .placement-box
-                                        .placement-bar
-                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.lb")
-                                td.rt
-                                    .placement-box
-                                        .placement-bar
-                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.rt")
-                                td.rb
-                                    .placement-box
-                                        .placement-bar
-                                    input(type="radio" name="infobar.placement" data-bool="infobar.placement.rb")
 
 
         h2 Support
@@ -152,5 +118,5 @@ html
                 | &nbsp;|&nbsp;
                 a(href="https://github.com/gebrkn/copytables") Source code
                 | &nbsp;|&nbsp;
-                | &copy; 2014~present Georg Barikin georg@merribithouse.net
+                | &copy; 2014~present Georg Barikin, georg@merribithouse.net
 
