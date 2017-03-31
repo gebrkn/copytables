@@ -51,9 +51,6 @@
         "find_next": {
             "description": "Find next table"
         },
-        "capture_off": {
-            "description": "Turn off the capture"
-        },
         "capture_cell": {
             "description": "Capture cells"
         },
@@ -62,6 +59,9 @@
         },
         "capture_row": {
             "description": "Capture rows"
+        },
+        "capture_zzz": {
+            "description": "Turn off the capture"
         },
         "capture_table": {
             "description": "Capture tables"

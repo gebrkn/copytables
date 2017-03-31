@@ -7,7 +7,7 @@ var
 ;
 
 function captureButtons() {
-    var mode = preferences.val('_captureMode') || 'off';
+    var mode = preferences.val('_captureMode') || 'zzz';
 
     return preferences.captureModes().map(function (m) {
         return util.format(

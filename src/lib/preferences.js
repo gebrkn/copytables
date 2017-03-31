@@ -37,7 +37,7 @@ var defaults = {
 
 var captureModes = [
     {
-        id: 'off',
+        id: 'zzz',
         name: 'Off'
     },
     {

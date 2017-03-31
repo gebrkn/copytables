@@ -87,7 +87,7 @@ function startCapture(evt, mode, extend) {
 }
 
 var copyLock = false,
-    copyWaitTimeout = 500,
+    copyWaitTimeout = 300,
     copyWaitTimer = 0;
 
 var eventListeners = {
@@ -136,7 +136,6 @@ var messageListeners = {
     dropSelection: function () {
         if (selection.table()) {
             selection.drop();
-            infobox.update(null);
         }
     },
 

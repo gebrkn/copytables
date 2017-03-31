@@ -45,7 +45,7 @@ function copyCommand(format, sender) {
 };
 
 function captureCommand(mode) {
-    if (mode === 'off') {
+    if (mode === 'zzz') {
         mode = '';
     }
 
