@@ -27,7 +27,12 @@ function parseEvent(evt) {
         mods = key.modifiers.code,
         kmods = mods & ~emod;
 
-    if (!key.scan.code && mods) {
+    if (preferences.val('capture.enabled') && preferences.val('_captureMode') && !kmods) {
+        console.log('got capture', preferences.val('_captureMode'), mods & emod);
+        return [preferences.val('_captureMode'), mods & emod];
+    }
+
+    if (!key.scan.code && kmods) {
 
         var cap = util.first(preferences.captureModes(), function (m) {
             return kmods === preferences.int('modifier.' + m.id);
@@ -37,11 +42,6 @@ function parseEvent(evt) {
             console.log('got modifier', cap.id, mods & emod);
             return [cap.id, mods & emod];
         }
-    }
-
-    if (preferences.val('capture.enabled') && preferences.val('_captureMode') && !kmods) {
-        console.log('got capture', preferences.val('_captureMode'), mods & emod);
-        return [preferences.val('_captureMode'), mods & emod];
     }
 }
 
