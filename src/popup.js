@@ -51,7 +51,9 @@ function init() {
             if (cmd) {
                 message.background({name: 'command', command: cmd});
             }
-            window.close();
+            if (!dom.attr(e.target, 'data-keep-open')) {
+                window.close();
+            }
         }
     });
 }
