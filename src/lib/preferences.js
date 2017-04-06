@@ -10,7 +10,7 @@ var firstMod = keyboard.modifiers.ALT,
 
 var defaults = {
     'modifier.cell': firstMod,
-    'modifier.column': 0,
+    'modifier.column': firstMod | secondMod,
     'modifier.row': 0,
     'modifier.table': 0,
     'modifier.extend': keyboard.modifiers.SHIFT,

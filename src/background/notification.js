@@ -8,7 +8,6 @@ var frequency = 500,
     last = null;
 
 
-
 function show() {
     if (pending) {
         if (pending.options) {
@@ -37,8 +36,17 @@ M.show = function (id, options) {
     });
 };
 
+M.hide = function () {
+    clearTimeout(timer);
+    if (pending)
+        chrome.notifications.clear(pending.id);
+    else if (last)
+        chrome.notifications.clear(last.id);
+    pending = last = null;
+};
 
-M.listen = function(handler) {
+
+M.listen = function (handler) {
     chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
         handler({
             type: 'closed',

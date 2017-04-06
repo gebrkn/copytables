@@ -14,7 +14,7 @@ M.is = function (el, sel) {
     return el && el.matches && el.matches(sel);
 };
 
-M.visible = function(el) {
+M.visible = function (el) {
     return el && !!(el.offsetHeight || el.offsetWidth);
 };
 
@@ -128,3 +128,27 @@ M.hasClass = function (el, cls) {
     return el && el.classList && el.classList.contains(cls);
 };
 
+M.textContent = function (node) {
+    var c = [];
+
+    function walk(n) {
+        if (!n)
+            return;
+
+        if (n.nodeType === 3) {
+            var t = (n.textContent || '').trim();
+            if (t.length)
+                c.push(t);
+            return;
+        }
+
+        if (!M.visible(n)) {
+            return;
+        }
+
+        (n.childNodes || []).forEach(walk);
+    }
+
+    walk(node);
+    return c;
+};

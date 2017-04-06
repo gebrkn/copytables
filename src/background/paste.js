@@ -199,7 +199,7 @@ M.table.prototype.html = function () {
 
 M.table.prototype.textMatrix = function () {
     return matrix.map(toMatrix(this.table), function (_, node) {
-        return node.td ? node.td.textContent : '';
+        return node.td ? dom.textContent(node.td).join(' ') : '';
     });
 };
 

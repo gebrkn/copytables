@@ -55,6 +55,8 @@ function asCSV(mat) {
     return mat.map(function (row) {
         return row.map(function (cell) {
             var s = util.strip(util.nobr(cell));
+            if (s.match(/^\w+$/))
+                return s;
             if (s.match(/^-?[0-9]+(\.[0-9]+)?$/))
                 return s;
             return '"' + s.replace(/"/g, '""') + '"';

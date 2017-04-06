@@ -46,22 +46,6 @@ var compute = {
     }
 };
 
-function textContent(node, c) {
-    if (node.nodeType === 3) {
-        var t = (node.textContent || '').trim();
-        if (t.length)
-            c.push(t);
-        return;
-    }
-
-    if (!dom.visible(node)) {
-        return;
-    }
-
-    (node.childNodes || []).forEach(function (n) {
-        textContent(n, c);
-    });
-}
 
 function numberValue(t) {
     if (!t.match(/^-?[\d,.]+$/))
@@ -86,12 +70,9 @@ function numberValue(t) {
 }
 
 function getValue(td) {
-    var c = [],
-        val = {text: '', number: 0};
+    var val = {text: '', number: 0};
 
-    textContent(td, c);
-
-    c.some(function (t) {
+    dom.textContent(td).some(function (t) {
         var n = numberValue(t);
         if (n !== null) {
             return val = {text: t, number: n};

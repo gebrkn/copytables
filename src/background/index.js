@@ -15,10 +15,18 @@ var message = require('../lib/message'),
 
 notification.listen(function(e) {
     if(e.id === 'infoBox' && e.type === 'buttonClicked' && e.options) {
-        var text = e.options.items.map(function(item) {
-            return item.title + '\t' + item.message;
-        }).join('\n');
-        copy.textCopy(text);
+        switch(e.button) {
+            case 0:
+                copy.textCopy(e.options.items.map(function(item) {
+                    return item.title + '\t' + item.message;
+                }).join('\n'));
+                break;
+            case 1:
+                notification.hide();
+                preferences.set('infobox.enabled', false);
+                message.broadcast('preferencesUpdated');
+                break;
+        }
     }
 });
 
@@ -37,7 +45,8 @@ var messageListeners = {
             message: '',
             items: msg.data,
             buttons: [
-                {title: 'Copy'}
+                {title: 'Copy'},
+                {title: 'Disable'}
             ]
         };
 
