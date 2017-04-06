@@ -27,11 +27,15 @@ function position(base) {
 
 };
 
-var scrollAmount = 5;
-
 M.Scroller = function(el) {
     this.base = closestScrollable(el.parentNode),
     this.anchor = position(this.base);
+    this.reset();
+};
+
+M.Scroller.prototype.reset = function() {
+    this.amount = preferences.int('scroll.amount');
+    this.acceleration = preferences.int('scroll.acceleration');
 };
 
 M.Scroller.prototype.adjustPoint = function (pt) {
@@ -44,8 +48,7 @@ M.Scroller.prototype.adjustPoint = function (pt) {
 
 M.Scroller.prototype.scroll = function (e) {
 
-    function adjust(sx, sy, ww, hh, cx, cy) {
-        var a = scrollAmount;
+    function adjust(a, sx, sy, ww, hh, cx, cy) {
         if (cx < a)      sx -= a;
         if (cx > ww - a) sx += a;
         if (cy < a)      sy -= a;
@@ -57,6 +60,7 @@ M.Scroller.prototype.scroll = function (e) {
 
         var b = dom.bounds(this.base);
         var p = adjust(
+            this.amount,
             this.base.scrollLeft,
             this.base.scrollTop,
             this.base.clientWidth,
@@ -71,6 +75,7 @@ M.Scroller.prototype.scroll = function (e) {
     } else {
 
         var p = adjust(
+            this.amount,
             window.scrollX,
             window.scrollY,
             window.innerWidth,
@@ -84,6 +89,6 @@ M.Scroller.prototype.scroll = function (e) {
         }
     }
 
-    //_state.speed = Math.min(_state.maxSpeed, _state.speed * scrollAcceleration);
-    //_state.timer = setTimeout(M.watch, 1000 / _state.speed);
+    this.amount = Math.max(1, Math.min(100, this.amount + this.amount * (this.acceleration / 100)));
+    console.log('scroll.amount=' + this.amount)
 };

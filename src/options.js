@@ -65,7 +65,8 @@ function load() {
     });
 
     dom.find('[data-text]').forEach(function (el) {
-        el.value = preferences.val(dom.attr(el, 'data-text')) || '';
+        var t = preferences.val(dom.attr(el, 'data-text'));
+        el.value =  typeof t === 'undefined' ? '' : t;
     });
 
     chrome.notifications.getPermissionLevel(function(level) {

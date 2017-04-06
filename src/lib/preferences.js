@@ -18,8 +18,8 @@ var defaults = {
     'capture.enabled': true,
     'capture.reset': false,
 
-    'scroll.speed': 300,
-    'scroll.acceleration': 30,
+    'scroll.amount': 30,
+    'scroll.acceleration': 5,
 
     'copy.format.enabled.richHTML': true,
     'copy.format.enabled.richHTMLCSS': true,
@@ -62,7 +62,7 @@ var copyFormats = [
     {
         "id": "richHTMLCSS",
         "name": "As is",
-        "desc": "Copy the table as seen on the screen (to insert into a Word document)"
+        "desc": "Copy the table as seen on the screen"
     },
     {
         "id": "richHTML",
@@ -126,6 +126,11 @@ var infoFunctions = [
 
 var prefs = {};
 
+function _constrain (min, val, max) {
+    val = Number(val) || min;
+    return Math.max(min, Math.min(val, max));
+}
+
 M.load = function () {
     return new Promise(function (resolve) {
         chrome.storage.local.get(null, function (obj) {
@@ -139,6 +144,10 @@ M.load = function () {
             }
 
             prefs = Object.assign({}, defaults, prefs, obj);
+
+            prefs['scroll.amount'] = _constrain(1, prefs['scroll.amount'], 100);
+            prefs['scroll.acceleration'] = _constrain(0, prefs['scroll.acceleration'], 100);
+
             console.log('PREFS LOAD', prefs);
             resolve(prefs);
         });

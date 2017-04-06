@@ -117,20 +117,19 @@ M.Capture.prototype.start = function (evt, mode, extend) {
 
     var self = this;
 
-    var tracker = function (mouseIsDown, evt) {
+    var tracker = function (type, evt) {
+        if(type === 'move')
+            self.scroller.reset();
         self.scroller.scroll(evt);
         self.setCaptured(self.markRect(evt));
         infobox.update(self.table);
 
-        if (!mouseIsDown) {
+        if (type === 'up') {
             self.onDone(self.table);
         }
     };
 
-    event.trackMouse(evt,
-        tracker,
-        preferences.val('scroll.speed'),
-        preferences.val('scroll.acceleration'));
+    event.trackMouse(evt, tracker);
 };
 
 M.Capture.prototype.stop = function () {
