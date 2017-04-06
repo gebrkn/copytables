@@ -1,0 +1,32 @@
+doctype html
+html
+    head
+        script(src="popup.js")
+        link(rel="stylesheet" type="text/css" href="popup.css")
+
+    body
+        table
+            tr
+                td
+                    b Copy:
+                td
+                    span#copy-buttons
+
+            tr
+                td
+                    b Find:
+                td
+                    button(data-command="find_previous") Previous Table
+                    button(data-command="find_next") Next Table
+
+            tr#capture-row
+                td
+                    b Capture:
+                td
+                    span#capture-buttons
+
+        div
+            p
+                a(data-command="open_options") Options
+            p
+                a(data-command="open_commands") Keyboard shortcuts

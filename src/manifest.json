@@ -1,0 +1,75 @@
+{
+    "manifest_version": 2,
+    "description": "Select table cells, rows and columns with your mouse or from a context menu. Copy as rich text, HTML, tab-delimited and CSV.",
+    "content_scripts": [
+        {
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "content.css"
+            ],
+            "matches": [
+                "*://*/*",
+                "file://*/*"
+            ],
+            "all_frames": true
+        }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "permissions": [
+        "clipboardRead",
+        "clipboardWrite",
+        "contextMenus",
+        "webNavigation",
+        "notifications",
+        "storage"
+    ],
+    "icons": {
+        "16": "ico16.png",
+        "48": "ico48.png",
+        "128": "ico128.png"
+    },
+    "browser_action": {
+        "default_icon": {
+            "19": "ico19.png",
+            "38": "ico38.png"
+        },
+        "default_title": "Copytables",
+        "default_popup": "popup.html"
+    },
+    "options_page": "options.html",
+    "commands": {
+        "find_previous": {
+            "description": "Find previous table"
+        },
+        "find_next": {
+            "description": "Find next table"
+        },
+        "capture_cell": {
+            "description": "Capture cells"
+        },
+        "capture_column": {
+            "description": "Capture columns"
+        },
+        "capture_row": {
+            "description": "Capture rows"
+        },
+        "capture_zzz": {
+            "description": "Turn off the capture"
+        },
+        "capture_table": {
+            "description": "Capture tables"
+        }
+
+
+    },
+    "name": "Copytables",
+    "version": "0.5.0",
+    "homepage_url": "https://merribithouse.net/copytables"
+}

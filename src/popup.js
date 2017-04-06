@@ -1,50 +1,61 @@
-var $ = function(x) { return document.getElementById(x) };
+var
+    dom = require('./lib/dom'),
+    preferences = require('./lib/preferences'),
+    message = require('./lib/message'),
+    event = require('./lib/event'),
+    util = require('./lib/util')
+;
 
-// Send a command to the content.
-function sendCommand(cmd, broadcast, fn) {
-    var qry = broadcast ? {} : {active: true, currentWindow: true}; 
-    chrome.tabs.query(qry, function(tabs) {
-        tabs.forEach(function(tab) {
-            chrome.tabs.sendMessage(tab.id, {command: cmd}, fn || function(r) {});
-        });
-    });
+function captureButtons() {
+    var mode = preferences.val('_captureMode') || 'zzz';
+
+    return preferences.captureModes().map(function (m) {
+        return util.format(
+            '<button class="${cls}" data-command="capture_${id}">${name}</button>',
+            {
+                id: m.id,
+                name: m.name,
+                cls: (m.id === mode) ? 'on' : ''
+            });
+    }).join('');
 }
 
-// Update buttons state.
-var updateState = function(state) {
-    $("modKey0").className = (state.modKey == 0) ? "in" : "";
-    $("modKey1").className = (state.modKey == 1) ? "in" : "";
-    $("mCopy").className = state.canCopy ? "" : "disabled";
-    $("mFind").className = state.hasTables ? "" : "disabled";
+function copyButtons() {
+    return preferences.copyFormats().filter(function (f) {
+        return f.enabled;
+    }).map(function (f) {
+        return util.format(
+            '<button data-command="copy_${id}" title="${desc}">${name}</button>',
+            f);
+    }).join('');
 }
 
-// Init the popup.
-var init = function(state) {
+function update() {
 
-    document.addEventListener("click", function(e) {
-        
-        var cmd = e.target.getAttribute("data-command");
-        if(!cmd)
-            return;
+    dom.findOne('#copy-buttons').innerHTML = copyButtons();
 
-        sendCommand("updateOptions", true);
-
-        sendCommand(cmd, false, function(state) {
-            updateState(state);
-            if(e.target.getAttribute("data-noclose") !== "1")
-                window.close();
-        });
-    
-    });
-
-    if(navigator.userAgent.indexOf("Macintosh") > 0) {
-        $("modKey0").innerHTML = "&#8997;";
-        $("modKey1").innerHTML = "&#8984;";
+    if (preferences.val('capture.enabled')) {
+        dom.findOne('#capture-row').style.display = '';
+        dom.findOne('#capture-buttons').innerHTML = captureButtons();
+    } else {
+        dom.findOne('#capture-row').style.display = 'none';
     }
-
-    updateState(state);
 }
 
-window.onload = function() {
-    sendCommand("openPopup", false, init);
+function init() {
+    update();
+
+    event.listen(document, {
+        'click': function (e) {
+            var cmd = dom.attr(e.target, 'data-command');
+            if (cmd) {
+                message.background({name: 'command', command: cmd});
+            }
+            window.close();
+        }
+    });
+}
+
+window.onload = function () {
+    preferences.load().then(init);
 };

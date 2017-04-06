@@ -1,0 +1,21 @@
+$border: #f0f0f0
+$body: #777
+$link: #999
+$accent: #1e88ff
+$hot: #f0a340
+$button: #eaeaea
+
+$i: !important
+$no-trans: all 0s 0s $i
+
+body[data-copytables-wait],
+body[data-copytables-wait] *
+    cursor: wait  $i
+
+[data-copytables-selected]:not([data-copytables-locked])
+    background: Highlight $i
+    transition: $no-trans
+
+[data-copytables-marked]:not([data-copytables-locked])
+    background: Highlight $i
+    transition: $no-trans

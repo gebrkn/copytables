@@ -1,0 +1,176 @@
+$border: #f0f0f0
+$body: #777
+$link: #aaa
+$accent: #1e88ff
+$hot: #f0a340
+
+html
+    margin: 0
+    padding: 0
+
+body
+    padding: 30px 30px 70px 30px
+
+body, td, th
+    font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif
+    font-size: 12px
+    color: $body
+
+h1
+    font-size: 24px
+    background: url('ico48.png') no-repeat
+    font-weight: 300
+    padding: 10px 0 10px 68px
+    margin: 0
+
+h2
+    color: $hot
+    margin: 36px 0 6px 70px
+    font-size: 18px
+    font-weight: 300
+
+h3
+    margin: 0 0 0 70px
+    font-size: 12px
+    font-weight: 300
+    max-width: 600px
+    line-height: 140%
+
+.box
+    padding: 12px 0 0 100px
+
+a
+    color: $accent
+    cursor: pointer
+
+p
+    margin: 6px 0
+
+table
+    border-collapse: collapse
+
+td
+    margin: 0
+    padding: 12px 12px 12px 0
+    font-weight: 400
+    text-align: left
+
+td b
+    padding-right: 12px
+    font-weight: 600
+    white-space: nowrap
+
+td u
+    margin: 0 6px
+    font-weight: 800
+    text-decoration: none
+    background: $link
+    color: white
+    padding: 0 4px
+    border-radius: 8px
+
+td i
+    display: block
+    font-size: 11px
+    max-width: 200px
+
+.sticky
+    margin-right: 6px
+    user-select: none
+    font-size: 11px
+
+    span
+        background: white
+        color: $link
+        border: 1px solid $link
+        border-radius: 8px
+        padding: 4px 8px
+        cursor: pointer
+        white-space: nowrap
+
+    &:hover span
+        color: $accent
+        border: 1px solid $accent
+
+    input:checked + span
+        color: white
+        background: $accent
+        border: 1px solid $accent
+
+    input
+        display: none
+
+.mousepad
+    display: inline-block
+    margin-left: 6px
+    text-align: center
+    width: 80px
+    user-select: none
+    font-size: 11px
+    background: $accent
+    border: 1px solid $accent
+    color: white
+    border-radius: 8px
+    padding: 5px 5px
+    transition: all 0.2s ease
+
+    span
+        cursor: pointer
+        white-space: nowrap
+
+
+    &:hover
+        background-color: black
+
+    input
+        display: none
+
+
+
+.cb
+    display: block
+    span
+        color: $link
+        padding-left: 4px
+
+    input:checked + span
+        color: $accent
+
+#placement td
+    text-align: center
+
+.placement-box
+    width: 50px
+    height: 30px
+    border: 1px solid $accent
+    position: relative
+    margin-bottom: 5px
+
+.placement-bar
+    width: 25px
+    height: 8px
+    background: $accent
+    position: absolute
+
+.lt .placement-bar
+    left: 1px
+    top: 1px
+
+.rt .placement-bar
+    right: 1px
+    top: 1px
+
+.lb .placement-bar
+    left: 1px
+    bottom: 1px
+
+.rb .placement-bar
+    right: 1px
+    bottom: 1px
+
+#custom-code
+    width: 400px
+    height: 200px
+    font-family: "Monaco", "UbuntuMono", monospace
+    font-size: 11px
+    border: 1px solid $border
