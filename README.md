@@ -7,13 +7,29 @@ Chrome extension to select and copy table cells.
 
 [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/copytables/ekdpkppgmlalfkphpibadldikjimijon)
 
-* Press <kbd>Alt</kbd> and click to select cells.
-* <kbd>Alt</kbd> + double click selects a column.
-* <kbd>Alt</kbd> + <kbd>Ctrl</kbd> + double click selects a row.
-* Copy selection (or the whole table) as rich text (for Word)
+* Hold <kbd>Alt</kbd> and drag to select cells.
+* Hold <kbd>Alt-Click</kbd> and drag to select columns.
+* Copy selection (or the whole table) as seen on the screen (for Word)
+* Copy as CSV or tab-delimited text (for Excel).
 * Copy as HTML (for your website).
-* Copy as CSV.
-* Copy as tab-delimited text.
+
+###New in version 0.5
+
+* Configurable hotkeys for cell, column, row and table selection.
+* Capture mode: select with simple click and drag.
+* Full support of framed documents.
+* Popup information about selected cells.
+* Swap (transpose) copy.
+
+###New in version 0.4
+
+* New popup menu.
+* Table search function.
+* Configurable hotkey (Ctrl/Alt).
+
+###New in version 0.3
+
+* Styled HTML export.
 
 ###New in version 0.2
 
@@ -21,13 +37,3 @@ Chrome extension to select and copy table cells.
 * Better HTML export.
 * Better support for weird table backgrounds (thanks [apptaro](https://github.com/apptaro)).
 * Overall speed improvement.
-
-###New in version 0.3
-
-* Styled HTML export.
-
-###New in version 0.4
-
-* New popup menu.
-* Table search function.
-* Configurable hotkey (Ctrl/Alt).
