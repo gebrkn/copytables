@@ -30,7 +30,7 @@ var defaults = {
     'copy.format.enabled.textTabs': true,
     'copy.format.enabled.textTabsSwap': true,
 
-    'copy.format.default.richHTML': true,
+    'copy.format.default.richHTMLCSS': true,
 
     'infobox.enabled': true
 };
