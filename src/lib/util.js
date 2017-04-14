@@ -66,3 +66,18 @@ M.format = function(s, obj) {
     });
 };
 
+var _times = {};
+
+M.timeStart = function(name) {
+    _times[name] = new Date;
+    return 'TIME START: ' + name;
+};
+
+M.timeEnd = function(name) {
+    if(_times[name]) {
+        var t = new Date() - _times[name];
+        delete _times[name];
+        return 'TIME END: ' + name + ' ' + t;
+    }
+};
+

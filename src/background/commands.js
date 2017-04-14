@@ -27,20 +27,27 @@ function findTableCommand(direction, sender) {
 }
 
 function copyCommand(format, sender) {
-    var _ts = new Date();
+    console.log(util.timeStart('copyCommand'));
 
     console.log('copyCommand', format, sender);
 
-    message.allFrames('beginCopy').then(function (res) {
+    var msg = {
+        name: 'beginCopy',
+        options: copy.options(format)
+    };
+
+    message.allFrames(msg).then(function (res) {
+        var ok = true;
+
         res.some(function (r) {
             if (r.data) {
-                copy.formats[format](r.receiver.url);
+                ok = copy.exec(format, r.receiver.url, r.data);
                 return true;
             }
         });
 
-        message.allFrames('endCopy');
-        console.log('copyCommand: ' + ((new Date()) - _ts));
+        message.allFrames(ok ? 'endCopy' : 'endCopyFailed');
+        console.log(util.timeEnd('copyCommand'));
     });
 };
 

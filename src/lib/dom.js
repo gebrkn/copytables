@@ -41,7 +41,7 @@ M.nth = function (n, sel, where) {
 };
 
 M.attr = function (el, name, value) {
-    if (!el) {
+    if (!el || !el.getAttribute) {
         return null;
     }
     if (arguments.length === 2) {
@@ -54,7 +54,7 @@ M.attr = function (el, name, value) {
 };
 
 M.removeAttr = function (el, name) {
-    if (el) {
+    if (el && el.removeAttribute) {
         el.removeAttribute(name);
     }
 };
@@ -91,6 +91,15 @@ M.closest = function (el, sel) {
         el = el.parentNode;
     }
     return null;
+};
+
+M.contains = function (parent, el) {
+    while (el) {
+        if (el === parent)
+            return true;
+        el = el.parentNode;
+    }
+    return false;
 };
 
 // Get element's bounds.
@@ -151,4 +160,18 @@ M.textContent = function (node) {
 
     walk(node);
     return c;
+};
+
+M.deselect = function() {
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+};
+
+M.select = function(el) {
+    var range = document.createRange(),
+        selection = window.getSelection();
+
+    range.selectNodeContents(el);
+    selection.removeAllRanges();
+    selection.addRange(range);
 };

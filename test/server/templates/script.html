@@ -1,0 +1,20 @@
+<table>
+    <tr>
+        <td style="font-size: 33px">
+            ONE: <script>document.write('one')</script> :END
+        </td>
+        <td style="color: blue">
+            <b>
+            <script>
+                window.addEventListener('load', function() {
+                    document.getElementById('script2').innerText = 'TWO';
+                })
+            </script>
+            TWO: <span id="script2">???</span> :END
+            </b>
+        </td>
+        <td>
+            <span onclick="console.log('three')">three</span>
+        </td>
+    </tr>
+</table>

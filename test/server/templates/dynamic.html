@@ -1,0 +1,68 @@
+<script>
+    Number.prototype.times = function (fn) {
+        let a = [];
+        for (let i = 0; i < Number(this); i++)
+            a.push(fn(i));
+        return a;
+    };
+
+    function tab1() {
+        var tab = document.createElement('table');
+
+        (20).times(function (r) {
+            var tr = document.createElement('tr');
+            tab.appendChild(tr);
+            (30).times(function (c) {
+                var td = document.createElement('td');
+                tr.appendChild(td);
+                td.textContent = r + 'x' + c;
+            });
+        });
+
+        return tab;
+    };
+
+    function generate() {
+        document.querySelector('#dyn1').appendChild(tab1());
+    }
+
+    function request(url, done) {
+
+        var r = new XMLHttpRequest();
+        r.addEventListener('load', function () {
+            done(this.responseText);
+        });
+        r.open('GET', url);
+        r.send();
+    }
+
+    function load() {
+        request('/raw/scroll', function(html) {
+            document.querySelector('#dyn2').innerHTML += html;
+        });
+    }
+
+    window.onload = function () {
+        setTimeout(generate, 500)
+    };
+</script>
+
+<style>
+    #dyn1 td {
+        border: 2px solid teal;
+        padding: 4px
+
+    }
+    #dyn2 td {
+        border: 2px solid cyan;
+        padding: 3px
+
+    }
+
+</style>
+
+<div id="dyn1"></div>
+<p>
+    <button onclick="load()">load</button>
+</p>
+<div id="dyn2"></div>

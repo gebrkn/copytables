@@ -87,6 +87,7 @@ let renderDoc = content => mustache.render(
 
 //
 
+app.use(express.static(__dirname + '/public'));
 
 app.get('/only/:tpl', (req, res, next) => {
     let content = req.params.tpl.split(',').map(renderTemplate).join('');
@@ -105,7 +106,7 @@ app.get('/raw/:tpl', (req, res, next) => {
 
 app.get('/all', (req, res, next) => {
     let content = '',
-        all = 'simple spans forms hidden framea nested scroll frameb styled frameset big';
+        all = 'simple spans forms hidden framea nested scroll frameb styled frameset dynamic';
 
     all.split(' ').forEach(tpl => {
         content += `<h2>${tpl}</h2>`;

@@ -90,6 +90,27 @@ var copyLock = false,
     copyWaitTimeout = 300,
     copyWaitTimer = 0;
 
+function beginCopy(msg) {
+    var tbl = selection.table();
+    if (!tbl)
+        return null;
+
+    copyLock = true;
+    var data = table.copy(tbl, msg.options);
+
+    copyWaitTimer = setTimeout(function () {
+        dom.attr(document.body, 'data-copytables-wait', 1);
+    }, copyWaitTimeout);
+
+    return data;
+}
+
+function endCopy() {
+    copyLock = false;
+    clearTimeout(copyWaitTimer);
+    dom.removeAttr(document.body, 'data-copytables-wait');
+}
+
 var eventListeners = {
     mousedownCapture: function (evt) {
         event.register(evt);
@@ -106,29 +127,31 @@ var eventListeners = {
             return;
         }
 
+        window.focus();
         startCapture(evt, p[0], p[1]);
     },
 
     copy: function (evt) {
-        if (!copyLock)
+        if (selection.active() && !copyLock) {
+            console.log('COPY MINE');
             message.background('genericCopy');
+            event.reset(evt);
+        } else if (copyLock) {
+            console.log('COPY LOCKED');
+            event.reset(evt);
+        } else {
+            console.log('COPY PASS');
+        }
     },
 
     contextmenu: function (evt) {
         event.register(evt);
 
-        if (!selection.selectable(evt.target)) {
-            message.background('dropAllSelections');
-            message.background({name: 'contextMenu', selectable: false});
-            return;
-        }
-
-        if (!selection.selected(evt.target)) {
-            message.background({name: 'contextMenu', selectable: true, selected: false});
-            return;
-        }
-
-        message.background({name: 'contextMenu', selectable: true, selected: true});
+        message.background({
+            name: 'contextMenu',
+            selectable: selection.selectable(evt.target),
+            selected: selection.active()
+        });
     }
 };
 
@@ -173,26 +196,17 @@ var messageListeners = {
         return tbl ? table.indexOf(tbl) : null;
     },
 
-    beginCopy: function () {
-        copyLock = true;
+    beginCopy: beginCopy,
+    endCopy: endCopy,
 
-        copyWaitTimer = setTimeout(function () {
-            dom.attr(document.body, 'data-copytables-wait', 1);
-        }, copyWaitTimeout);
-
-        var tbl = selection.table();
-        if (tbl) {
-            table.copy(tbl);
-            return true;
+    endCopyFailed: function () {
+        if(copyLock) {
+            // inform the user that copy/paste failed
+            console.error('Sorry, Copytables was unable to copy this table.');
         }
-        return false;
-    },
-
-    endCopy: function () {
-        copyLock = false;
-        clearTimeout(copyWaitTimer);
-        dom.removeAttr(document.body, 'data-copytables-wait');
+        endCopy();
     }
+
 };
 
 function init() {

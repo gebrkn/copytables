@@ -1,0 +1,32 @@
+<style>
+    #viewbox, #htmlbox, #textbox {
+        width: 100%;
+        height: 30%;
+        background: white;
+        border: 1px solid teal;
+        overflow: auto;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+</style>
+
+<script>
+    function onPaste1() {
+        setTimeout(function () {
+            document.querySelector('#viewbox').innerHTML = document.querySelector('#htmlbox').innerHTML;
+        }, 10);
+    }
+    function onPaste2() {
+        setTimeout(function () {
+            document.querySelector('#viewbox').innerHTML = document.querySelector('#textbox').value
+        }, 10);
+    }
+</script>
+
+
+<div id="viewbox"></div>
+<div id="htmlbox" contenteditable="true" onpaste="onPaste1()"></div>
+<textarea id="textbox" onpaste="onPaste2()"></textarea>
+
+{{{content}}}

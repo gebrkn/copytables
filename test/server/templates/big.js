@@ -9,14 +9,20 @@ module.exports.render = h => {
 
     function chunk(n) {
         n = n % text.length;
-        return text.substr(n, n + 100)
+        var a = text.substr(n +  0, n + 20);
+        var b = text.substr(n + 20, n + 40);
+        var c = text.substr(n + 40, n + 60);
+        var d = text.substr(n + 60, n + 80);
+
+        a = `<b>${a}</b><i>${b}</i><u>${c}</u><em>${d}</em>`;
+        return a + ' ' + a + ' ' + a;
     }
 
     function num(n, m) {
         return (n & 0xffff) * m;
     }
 
-    let rc = 1000,
+    let rc = 500,
         rows = [],
         text = h.textSource();
 

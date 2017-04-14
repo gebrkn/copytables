@@ -1,8 +1,11 @@
 var M = module.exports = {};
 
 var dom = require('../lib/dom'),
-    cell = require('../lib/cell')
-    ;
+    cell = require('../lib/cell'),
+    css = require('../lib/css'),
+    event = require('../lib/event'),
+    util = require('../lib/util')
+;
 
 function listTables() {
     var all = [];
@@ -57,30 +60,67 @@ M.enum = function (selectedTable) {
     });
 };
 
-M.copy = function (tbl) {
-    var _ts = new Date();
+M.copy = function (tbl, options) {
+    console.log(util.timeStart('table.copy'));
 
-    dom.cells(tbl).forEach(function(td) {
-        if(cell.selected(td)) {
+    // lock selected cells to remove highlighting with no animation
+    dom.cells(tbl).forEach(function (td) {
+        if (cell.selected(td)) {
             cell.lock(td)
         }
     });
 
-    var range = document.createRange();
-    range.selectNodeContents(tbl);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    document.execCommand('copy');
-    sel.removeAllRanges();
+    if (options.method === 'transfer') {
+        var data = {
+            css: {},
+            html: ''
+        };
 
-    dom.cells(tbl).forEach(function(td) {
-        if(cell.selected(td)) {
+        if (options.keepStyles) {
+            dom.findSelf('*', tbl).forEach(function (el, uid) {
+                dom.attr(el, 'data-copytables-uid', uid);
+                data.css[uid] = css.read(el);
+            });
+        }
+
+        data.html = tbl.outerHTML;
+
+        if (options.keepStyles) {
+            dom.findSelf('*', tbl).forEach(function (el) {
+                dom.removeAttr(el, 'data-copytables-uid');
+            });
+        }
+    }
+
+    if (options.method === 'clipboard') {
+        var data = true;
+
+        dom.select(tbl);
+
+        // wrap copy in a capturing handler to work around copy-hijackers
+
+        var copyHandler = function (evt) {
+            console.log('COPY IN TABLE');
+            evt.stopPropagation();
+        };
+
+        document.addEventListener('copy', copyHandler, true);
+        document.execCommand('copy');
+        document.removeEventListener('copy', copyHandler, true);
+
+        dom.deselect();
+    }
+
+    dom.cells(tbl).forEach(function (td) {
+        if (cell.selected(td)) {
             cell.unlock(td)
         }
     });
 
-    console.log('content.copy: ' + ((new Date()) - _ts));
+    console.log('table.copy method=' + options.method);
+    console.log(util.timeEnd('table.copy'));
+
+    return data;
 };
 
 M.selectCaptured = function (tbl) {
