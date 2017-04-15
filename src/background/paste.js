@@ -58,7 +58,7 @@ function toMatrix(tbl) {
 function trim(tbl) {
     console.log(util.timeStart('trim.filter'));
 
-    var mat = matrix.filter(toMatrix(tbl), function (node) {
+    var mat = matrix.trim(toMatrix(tbl), function (node) {
         return cell.selected(node.td);
     });
 
@@ -226,7 +226,7 @@ M.table.prototype.initTable = function (data, options) {
         var clipboard = '';
 
         var pasteHandler = function (evt) {
-            console.info('paste handler toggled');
+            console.log('paste handler toggled');
             clipboard = evt.clipboardData.getData('text/html');
             evt.stopPropagation();
             evt.preventDefault();

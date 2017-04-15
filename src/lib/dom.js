@@ -74,7 +74,7 @@ M.cells = function (tbl) {
     var ls = [];
 
     M.rows(tbl).forEach(function (tr) {
-        ls = ls.concat(tr.cells);
+        ls = ls.concat(toArray(tr.cells));
     });
 
     return ls;
