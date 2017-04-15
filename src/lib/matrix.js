@@ -16,7 +16,7 @@ M.transpose = function (mat) {
     });
 };
 
-M.filter = function (mat, fn) {
+M.trim = function (mat, fn) {
 
     var fun = function (row) {
         return row.some(function (cell) {

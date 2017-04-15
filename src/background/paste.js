@@ -178,7 +178,7 @@ function removeHiddenElements(node) {
 M.table = function () {
 };
 
-M.table.prototype.init = function (url, data, options) {
+M.table.prototype.init = function (data, options) {
     console.log(util.timeStart('paste.init'));
 
     this.frame = document.createElement('IFRAME');
@@ -189,8 +189,15 @@ M.table.prototype.init = function (url, data, options) {
     this.body = this.doc.body;
 
     var base = this.doc.createElement('BASE');
-    dom.attr(base, 'href', url);
+    dom.attr(base, 'href', data.url);
     this.body.appendChild(base);
+
+    // some cells (e.g. containing an image) could become width=0
+    // after paste, breaking toMatrix calculations
+    var css = this.doc.createElement('STYLE');
+    css.type = "text/css";
+    css.innerHTML = 'td { min-width: 1px; }';
+    this.body.appendChild(css);
 
     this.div = this.doc.createElement('DIV');
     this.div.contentEditable = true;
@@ -231,7 +238,7 @@ M.table.prototype.initTable = function (data, options) {
         this.div.innerHTML = clipboard;
     }
 
-    if(options.method === 'transfer') {
+    if (options.method === 'transfer') {
         this.div.innerHTML = data.html;
     }
 
@@ -242,13 +249,11 @@ M.table.prototype.initTable = function (data, options) {
     if (!this.table || this.table.tagName.toUpperCase() !== 'TABLE')
         return false;
 
-
-    if (options.withSelection) {
+    if (data.hasSelection) {
         console.log(util.timeStart('paste.trim'));
         trim(this.table);
         console.log(util.timeEnd('paste.trim'));
     }
-
 
     if (options.method === 'transfer' && options.keepStyles) {
         console.log(util.timeStart('paste.restoreStyles'));

@@ -42,7 +42,7 @@ function trimTextMatrix(mat) {
     mat = matrix.map(mat, function(row, cell) {
         return util.strip(util.nobr(cell));
     });
-    return matrix.filter(mat, Boolean);
+    return matrix.trim(mat, Boolean);
 }
 
 function asTabs(mat) {
@@ -109,12 +109,12 @@ M.options = function(format) {
     return M.formats[format].opts;
 };
 
-M.exec = function(format, url, data) {
+M.exec = function(format, data) {
     var ok = false,
         t = new paste.table(),
         fmt = M.formats[format];
 
-    if (t.init(url, data, fmt.opts)) {
+    if (t.init(data, fmt.opts)) {
         fmt.exec(t);
         ok = true;
     }

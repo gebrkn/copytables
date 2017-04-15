@@ -63,16 +63,19 @@ M.findSelf = function (sel, where) {
     return [where || document].concat(toArray(M.find(sel, where)));
 };
 
+M.rows = function (tbl) {
+    if (tbl && tbl.rows) {
+        return toArray(tbl.rows);
+    }
+    return [];
+};
+
 M.cells = function (tbl) {
     var ls = [];
 
-    if (tbl && tbl.rows) {
-        each(tbl.rows, function (tr) {
-            each(tr.cells, function (td) {
-                ls.push(td);
-            });
-        });
-    }
+    M.rows(tbl).forEach(function (tr) {
+        ls = ls.concat(tr.cells);
+    });
 
     return ls;
 };
@@ -162,12 +165,12 @@ M.textContent = function (node) {
     return c;
 };
 
-M.deselect = function() {
+M.deselect = function () {
     var selection = window.getSelection();
     selection.removeAllRanges();
 };
 
-M.select = function(el) {
+M.select = function (el) {
     var range = document.createRange(),
         selection = window.getSelection();
 

@@ -33,23 +33,33 @@ function copyCommand(format, sender) {
 
     var msg = {
         name: 'beginCopy',
+        broadcast: !sender,
         options: copy.options(format)
     };
 
-    message.allFrames(msg).then(function (res) {
-        var ok = true;
+    var ok = true;
 
-        res.some(function (r) {
-            if (r.data) {
-                ok = copy.exec(format, r.receiver.url, r.data);
-                return true;
-            }
+    function doCopy(r) {
+        if (r.data) {
+            ok = copy.exec(format, r.data);
+            return true;
+        }
+    }
+
+    if (sender) {
+        message.frame(msg, sender).then(function(r) {
+            doCopy(r);
+            message.frame(ok ? 'endCopy' : 'endCopyFailed', sender);
+            console.log(util.timeEnd('copyCommand'));
         });
-
-        message.allFrames(ok ? 'endCopy' : 'endCopyFailed');
-        console.log(util.timeEnd('copyCommand'));
-    });
-};
+    } else {
+        message.allFrames(msg).then(function (res) {
+            res.some(doCopy);
+            message.allFrames(ok ? 'endCopy' : 'endCopyFailed');
+            console.log(util.timeEnd('copyCommand'));
+        });
+    }
+}
 
 function captureCommand(mode) {
     if (mode === 'zzz') {

@@ -60,21 +60,25 @@ M.enum = function (selectedTable) {
     });
 };
 
-M.copy = function (tbl, options) {
+M.copy = function (tbl, options, hasSelection) {
     console.log(util.timeStart('table.copy'));
 
-    // lock selected cells to remove highlighting with no animation
-    dom.cells(tbl).forEach(function (td) {
-        if (cell.selected(td)) {
-            cell.lock(td)
-        }
-    });
+    var data = {
+        hasSelection: hasSelection,
+        url: document.location ? document.location.href : ''
+    };
+
+    if (hasSelection) {
+        // lock selected cells to remove highlighting with no animation
+        dom.cells(tbl).forEach(function (td) {
+            if (cell.selected(td)) {
+                cell.lock(td)
+            }
+        });
+    }
 
     if (options.method === 'transfer') {
-        var data = {
-            css: {},
-            html: ''
-        };
+        data.css = {};
 
         if (options.keepStyles) {
             dom.findSelf('*', tbl).forEach(function (el, uid) {
@@ -93,8 +97,6 @@ M.copy = function (tbl, options) {
     }
 
     if (options.method === 'clipboard') {
-        var data = true;
-
         dom.select(tbl);
 
         // wrap copy in a capturing handler to work around copy-hijackers
@@ -111,11 +113,13 @@ M.copy = function (tbl, options) {
         dom.deselect();
     }
 
-    dom.cells(tbl).forEach(function (td) {
-        if (cell.selected(td)) {
-            cell.unlock(td)
-        }
-    });
+    if (hasSelection) {
+        dom.cells(tbl).forEach(function (td) {
+            if (cell.selected(td)) {
+                cell.unlock(td)
+            }
+        });
+    }
 
     console.log('table.copy method=' + options.method);
     console.log(util.timeEnd('table.copy'));

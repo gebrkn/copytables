@@ -91,12 +91,22 @@ var copyLock = false,
     copyWaitTimer = 0;
 
 function beginCopy(msg) {
-    var tbl = selection.table();
-    if (!tbl)
-        return null;
+    var tbl = selection.table(),
+        hasSelection = true;
+
+    if (!tbl) {
+        if (msg.broadcast)
+            return null;
+        var el = event.lastTarget(),
+            t = table.locate(el);
+        if (!t)
+            return null;
+        tbl = t.table;
+        hasSelection = false;
+    }
 
     copyLock = true;
-    var data = table.copy(tbl, msg.options);
+    var data = table.copy(tbl, msg.options, hasSelection);
 
     copyWaitTimer = setTimeout(function () {
         dom.attr(document.body, 'data-copytables-wait', 1);
@@ -200,7 +210,7 @@ var messageListeners = {
     endCopy: endCopy,
 
     endCopyFailed: function () {
-        if(copyLock) {
+        if (copyLock) {
             // inform the user that copy/paste failed
             console.error('Sorry, Copytables was unable to copy this table.');
         }
