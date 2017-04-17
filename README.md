@@ -8,7 +8,7 @@ Chrome extension to select and copy table cells.
 [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/copytables/ekdpkppgmlalfkphpibadldikjimijon)
 
 * Hold <kbd>Alt</kbd> and drag to select cells.
-* Hold <kbd>Alt-Click</kbd> and drag to select columns.
+* Hold <kbd>Alt-Ctrl</kbd> and drag to select columns.
 * Copy selection (or the whole table) as seen on the screen (for Word)
 * Copy as CSV or tab-delimited text (for Excel).
 * Copy as HTML (for your website).
