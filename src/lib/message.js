@@ -59,6 +59,17 @@ M.enumFrames = function (tabFilter) {
     function framesInTab(tab) {
         return new Promise(function (resolve) {
             chrome.webNavigation.getAllFrames({tabId: tab.id}, function (frames) {
+
+                if (!frames) {
+                    // Vivaldi, as of 1.8.770.56, doesn't support getAllFrames() properly
+                    // let's pretend there's only one top frame
+                    frames = [{
+                        errorOccurred: false,
+                        frameId: 0,
+                        parentFrameId: -1
+                    }];
+                }
+
                 resolve(frames.map(function (f) {
                     f.tabId = tab.id;
                     return f;
