@@ -76,5 +76,7 @@ gulp.task('watch', ['reload'], function () {
 });
 
 gulp.task('deploy', ['make'], function () {
-    cp.execSync('rm -f ./copytables.zip && zip -j ./copytables.zip ./app/*');
+    var m = require('./src/manifest.json'),
+        fn = 'copytables_' + m.version.replace(/\./g, '_') + '.zip';
+    cp.execSync('rm -f ./' + fn + ' && zip -j ./' + fn + ' ./app/*');
 });
