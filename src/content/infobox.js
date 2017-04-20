@@ -48,18 +48,22 @@ var compute = {
 
 
 function numberValue(t) {
-    if (!t.match(/^-?[\d,.]+$/))
+    var m = t.match(/-?[\d,.]+/g);
+
+    if (!m || m.length !== 1)
         return null;
 
-    var m = t.match(/^(.+?)[.,](\d\d?)$/),
+    var s = m[0],
         f = 0;
+
+    m = s.match(/^(.+?)[.,](\d\d?)$/);
 
     if (m) {
         f = Number(m[2]);
-        t = m[1];
+        s = m[1];
     }
 
-    var p = Number(t.replace(/[^\d-]/g, '')),
+    var p = Number(s.replace(/[^\d-]/g, '')),
         q = Number(p + '.' + f);
 
     if (Number.isNaN(q)) {

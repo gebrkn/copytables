@@ -106,7 +106,7 @@ app.get('/raw/:tpl', (req, res, next) => {
 
 app.get('/all', (req, res, next) => {
     let content = '',
-        all = 'simple spans forms hidden framea nested scroll frameb styled frameset dynamic';
+        all = 'simple spans numbers forms hidden framea nested scroll frameb styled frameset dynamic';
 
     all.split(' ').forEach(tpl => {
         content += `<h2>${tpl}</h2>`;
