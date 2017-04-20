@@ -31,6 +31,15 @@
         background: cornsilk;
 
     }
+
+    .unselect1 {
+        user-select: none;
+    }
+
+    .unselect2 {
+        -webkit-user-select: none;
+    }
+
 </style>
 
 
@@ -54,6 +63,17 @@
         <td>tr animated</td>
         <td>tr animated</td>
         <td>tr animated</td>
+    </tr>
+    <tr>
+        <td class="unselect1">TD = NOT SELECTABLE</td>
+        <td class="unselect2">TD = NOT SELECTABLE</td>
+    </tr>
+</table>
+
+<table class="unselect1">
+    <tr>
+        <td>TABLE = NOT SELECTABLE</td>
+        <td>TABLE = NOT SELECTABLE</td>
     </tr>
 </table>
 

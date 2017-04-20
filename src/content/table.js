@@ -97,6 +97,13 @@ M.copy = function (tbl, options, hasSelection) {
     }
 
     if (options.method === 'clipboard') {
+        // work around "unselectable" tables
+
+        var style = document.createElement('STYLE');
+        style.type = 'text/css';
+        style.innerHTML = '* { user-select: auto !important; -webkit-user-select: auto !important }';
+        document.body.appendChild(style);
+
         dom.select(tbl);
 
         // wrap copy in a capturing handler to work around copy-hijackers
@@ -111,6 +118,7 @@ M.copy = function (tbl, options, hasSelection) {
         document.removeEventListener('copy', copyHandler, true);
 
         dom.deselect();
+        document.body.removeChild(style);
     }
 
     if (hasSelection) {
