@@ -7,11 +7,24 @@ var cell = require('../lib/cell'),
     message = require('../lib/message'),
     preferences = require('../lib/preferences');
 
-function sum(values) {
-    return values.reduce(function (s, v) {
-        return s + v.number;
-    }, 0);
+function sum(vs) {
+    return vs.reduce(function (x, y) {
+        return x + y
+    });
 }
+
+function getNumbers(values) {
+    var vs = [];
+
+    values.forEach(function (v) {
+        if (v.isNumber)
+            vs.push(v.number);
+    });
+
+    return vs.length ? vs : null;
+}
+
+var naSymbol = '-';
 
 function format(n) {
     return Number(n.toFixed(2)).toLocaleString();
@@ -24,62 +37,79 @@ var compute = {
     },
 
     sum: function (values) {
-        return format(sum(values));
+        var vs = getNumbers(values);
+        return vs ? format(sum(vs)) : naSymbol;
     },
 
     avg: function (values) {
-        return format(values.length ? (sum(values) / values.length) : 0);
+        var vs = getNumbers(values);
+        return vs ? format(sum(vs) / vs.length) : naSymbol;
     },
 
     min: function (values) {
-        var vs = values.map(function (v) {
-            return v.number;
-        });
-        return format(vs.length ? Math.min.apply(Math, vs) : 0);
+        var vs = getNumbers(values);
+        return vs ? format(Math.min.apply(Math, vs)) : naSymbol;
     },
 
     max: function (values) {
-        var vs = values.map(function (v) {
-            return v.number;
-        });
-        return format(vs.length ? Math.max.apply(Math, vs) : 0);
+        var vs = getNumbers(values);
+        return vs ? format(Math.max.apply(Math, vs)) : naSymbol;
     }
 };
 
+function parseNumber(t) {
+    // 123.45
+    if (t.match(/^\d+(\.\d+)?$/)) {
+        return Number(t);
+    }
+
+    // -12,345,678.00
+    if (t.match(/^\d{1,3}(,\d{3})+(\.\d+)?$/)) {
+        return Number(t.split(',').join(''));
+    }
+
+    // 1234,5678
+    if (t.match(/^\d+,\d+$/)) {
+        return Number(t.split(',').join('.'));
+    }
+
+    // 12.345.678,00
+    if (t.match(/^\d{1,3}(\.\d{3})+(,\d+)?$/)) {
+        return Number(t.split('.').join('').split(',').join('.'));
+    }
+}
 
 function numberValue(t) {
-    var m = t.match(/-?[\d,.]+/g);
+    var m = t.match(/-?\d+([.,]\d+)*/g);
 
-    if (!m || m.length !== 1)
-        return null;
-
-    var s = m[0],
-        f = 0;
-
-    m = s.match(/^(.+?)[.,](\d\d?)$/);
-
-    if (m) {
-        f = Number(m[2]);
-        s = m[1];
-    }
-
-    var p = Number(s.replace(/[^\d-]/g, '')),
-        q = Number(p + '.' + f);
-
-    if (Number.isNaN(q)) {
+    if (!m || m.length !== 1) {
         return null;
     }
 
-    return q;
+    t = m[0];
+
+    var sign = 1;
+
+    if (t[0] === '-') {
+        t = t.slice(1);
+        sign = -1;
+    }
+
+    var n = parseNumber(t);
+    if (!isNaN(n)) {
+        return sign * n;
+    }
+
+    return null;
 }
 
 function getValue(td) {
-    var val = {text: '', number: 0};
+    var val = {text: '', number: 0, isNumber: false};
 
     dom.textContent(td).some(function (t) {
         var n = numberValue(t);
         if (n !== null) {
-            return val = {text: t, number: n};
+            return val = {text: t, number: n, isNumber: true};
         }
     });
 
@@ -96,7 +126,6 @@ function data(tbl) {
     if (!cells || !cells.length) {
         return null;
     }
-
 
     var values = [];
 
