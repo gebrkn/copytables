@@ -29,6 +29,7 @@ var defaults = {
     'copy.format.enabled.textHTMLCSS': true,
     'copy.format.enabled.textTabs': true,
     'copy.format.enabled.textTabsSwap': true,
+    'copy.format.enabled.textTextile': true,
 
     'copy.format.default.richHTMLCSS': true,
 
@@ -98,6 +99,11 @@ var copyFormats = [
         "id": "textHTML",
         "name": "HTML",
         "desc": "Copy as HTML source, without formatting"
+    },
+    {
+        "id": "textTextile",
+        "name": "Textile",
+        "desc": "Copy as Textile"
     },
 ];
 
