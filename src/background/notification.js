@@ -8,20 +8,21 @@ var frequency = 500,
     last = null;
 
 
-function show() {
-    if (pending) {
-        if (pending.options) {
-            chrome.notifications.create(pending.id, pending.options);
-            last = pending;
-        } else {
-            chrome.notifications.clear(pending.id);
-            last = null;
-        }
-        pending = null;
+function stopTimer() {
+    if (timer) {
+        clearInterval(timer);
+    }
+    timer = 0;
+}
 
+function doShow() {
+    if (pending) {
+        chrome.notifications.create(pending.id, pending.options);
+        console.log('notification: show');
+        last = pending;
+        pending = null;
     } else if (timer) {
-        clearTimeout(timer);
-        timer = 0;
+        stopTimer();
         console.log('notification: no more');
     }
 }
@@ -31,13 +32,13 @@ M.show = function (id, options) {
         if (level === 'granted') {
             pending = {id: id, options: options};
             if (!timer)
-                timer = setInterval(show, frequency);
+                timer = setInterval(doShow, frequency);
         }
     });
 };
 
 M.hide = function () {
-    clearTimeout(timer);
+    stopTimer();
     if (pending)
         chrome.notifications.clear(pending.id);
     else if (last)

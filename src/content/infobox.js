@@ -4,7 +4,7 @@ var M = module.exports = {};
 
 var cell = require('../lib/cell'),
     dom = require('../lib/dom'),
-    message = require('../lib/message'),
+    event = require('../lib/event'),
     preferences = require('../lib/preferences');
 
 function sum(vs) {
@@ -138,11 +138,99 @@ function data(tbl) {
     });
 };
 
+var
+    boxId = '__copytables_infobox__',
+    pendingContent = null,
+    timer = 0,
+    freq = 500;
+
+function getBox() {
+    return dom.findOne('#' + boxId);
+}
+
+function setTimer() {
+    if (!timer)
+        timer = setInterval(draw, freq);
+}
+
+function clearTimer() {
+        clearInterval(timer);
+        timer = 0;
+}
+
+function html(items) {
+    var h = [];
+
+    items.forEach(function (item) {
+        if (item.message !== naSymbol)
+            h.push('<b>' + item.title + '<i>' + item.message + '</i></b>');
+    });
+
+    return '<span>' + h.join('') + '</span>';
+}
+
+function init() {
+    var box = dom.create('div', {
+        id: boxId,
+        'data-position': preferences.val('infobox.position') || '0'
+    });
+    document.body.appendChild(box);
+    return box;
+}
+
+function draw() {
+    if (!pendingContent) {
+        console.log('no pendingContent');
+        clearTimer();
+        return;
+    }
+
+    if (pendingContent === 'hide') {
+        console.log('removed');
+        dom.remove([getBox()]);
+        clearTimer();
+        return;
+    }
+
+    var box = getBox() || init();
+
+    dom.removeClass(box, 'hidden');
+    box.innerHTML = pendingContent;
+
+    pendingContent = null;
+    console.log('drawn');
+}
+
+function show(items) {
+    var p = html(items);
+
+    if (p === pendingContent) {
+        console.log('same content');
+        return;
+    }
+
+    if (pendingContent) {
+        console.log('queued');
+    }
+
+    pendingContent = p;
+    setTimer();
+}
+
+function hide() {
+    console.log('about to remove...');
+    pendingContent = 'hide';
+    dom.addClass(getBox(), 'hidden');
+    setTimer();
+}
+
 M.update = function (tbl) {
     if (preferences.val('infobox.enabled')) {
-        message.background({
-            name: 'showInfoBox',
-            data: data(tbl)
-        });
+        show(data(tbl));
     }
 };
+
+M.remove = function () {
+    hide();
+};
+

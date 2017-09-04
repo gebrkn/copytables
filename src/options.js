@@ -64,21 +64,14 @@ function load() {
         el.checked = !!preferences.val(dom.attr(el, 'data-bool'));
     });
 
+    dom.find('[data-select]').forEach(function (el) {
+        el.checked = preferences.val(dom.attr(el, 'data-select')) === dom.attr(el, 'data-select-value');
+    });
+
     dom.find('[data-text]').forEach(function (el) {
         var t = preferences.val(dom.attr(el, 'data-text'));
-        el.value =  typeof t === 'undefined' ? '' : t;
+        el.value = typeof t === 'undefined' ? '' : t;
     });
-
-    chrome.notifications.getPermissionLevel(function(level) {
-        dom.find('[data-notification]').forEach(function(el) {
-            el.style.display = 'none';
-        });
-        console.log(dom.find('[data-notification="' + level + '"]'))
-        dom.find('[data-notification="' + level + '"]').forEach(function(el) {
-            el.style.display = '';
-        });
-    });
-
 }
 
 function save() {
@@ -92,6 +85,11 @@ function save() {
 
     dom.find('[data-bool]').forEach(function (el) {
         prefs[dom.attr(el, 'data-bool')] = !!el.checked;
+    });
+
+    dom.find('[data-select]').forEach(function (el) {
+        if (el.checked)
+            prefs[dom.attr(el, 'data-select')] = dom.attr(el, 'data-select-value');
     });
 
     dom.find('[data-text]').forEach(function (el) {

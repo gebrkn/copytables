@@ -1,21 +1,36 @@
 'use strict';
 
 var
+    clip = require('gulp-clip-empty-files'),
     cp = require('child_process'),
     del = require('del'),
+    fs = require('fs'),
     gulp = require('gulp'),
     named = require('vinyl-named'),
     pug = require('gulp-pug'),
+    path = require('path'),
     rename = require('gulp-rename'),
     sass = require('gulp-sass'),
+    sassTypes = require('node-sass').types,
     webpack = require('webpack-stream'),
     uglify = require('gulp-uglify'),
     util = require('gulp-util')
-    ;
+;
 
 const DEST = './app';
 const TEST_URL = 'http://localhost:9876/all';
 const IS_DEV = process.env.NODE_ENV === 'dev';
+
+// based on https://coderwall.com/p/fhgu_q/inlining-images-with-gulp-sass
+function sassInlineImage(file) {
+    var
+        filePath = path.resolve(process.cwd(), file.getValue()),
+        ext = filePath.split('.').pop(),
+        data = fs.readFileSync(filePath),
+        buffer = new Buffer(data),
+        str = '"data:image/' + ext + ';base64,' + buffer.toString('base64') + '"';
+    return sassTypes.String(str);
+}
 
 const webpackConfig = {
     devtool: null,
@@ -40,7 +55,12 @@ gulp.task('js', function () {
 
 gulp.task('sass', function () {
     return gulp.src('./src/*.sass')
-        .pipe(sass())
+        .pipe(sass({
+            functions: {
+                'inline-image($file)': sassInlineImage
+            }
+        }))
+        .pipe(clip())
         .pipe(gulp.dest(DEST))
         ;
 });

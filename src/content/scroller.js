@@ -90,5 +90,4 @@ M.Scroller.prototype.scroll = function (e) {
     }
 
     this.amount = Math.max(1, Math.min(100, this.amount + this.amount * (this.acceleration / 100)));
-    console.log('scroll.amount=' + this.amount)
 };

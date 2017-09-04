@@ -1,9 +1,4 @@
-$border: #f0f0f0
-$body: #777
-$link: #999
-$accent: #1e88ff
-$hot: #f0a340
-$button: #eaeaea
+@import "colors"
 
 $i: !important
 $no-trans: all 0s 0s $i
@@ -19,3 +14,64 @@ body[data-copytables-wait] *
 [data-copytables-marked]:not([data-copytables-locked])
     background: Highlight $i
     transition: $no-trans
+
+$infobox-border: 9px
+$infobox-color: $accent
+
+#__copytables_infobox__
+
+    position: fixed
+    font-family: Arial, sans-serif
+    font-size: 14px
+
+    overflow: hidden
+    white-space: nowrap
+    z-index: 65535
+
+    background-color: darken($infobox-color, 1)
+    background-image: url(inline-image('src/ico16.png'))
+    background-position: 8px center
+    background-repeat: no-repeat
+
+    padding: 12px 12px 12px 24px
+
+    opacity: 0.95
+    transition: opacity 0.2s ease
+
+    &.hidden
+        opacity: 0
+
+    &[data-position="0"]
+        left: 0
+        top: 0
+        border-bottom-right-radius: $infobox-border
+    &[data-position="1"]
+        right: 0
+        top: 0
+        border-bottom-left-radius: $infobox-border
+    &[data-position="2"]
+        right: 0
+        bottom: 0
+        border-top-left-radius: $infobox-border
+    &[data-position="3"]
+        left: 0
+        bottom: 0
+        border-top-right-radius: $infobox-border
+
+    b
+        display: inline-block
+        margin: 0
+        padding: 0 12px
+        border-left: 1px dotted lighten($infobox-color, 25)
+        font-weight: 200
+        color: lighten($infobox-color, 35)
+
+        &:first-child
+            border-left: none
+
+        i
+            font-style: normal
+            padding-left: 6px
+            font-weight: 700
+            color: lighten($infobox-color, 45)
+

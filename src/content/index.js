@@ -170,6 +170,9 @@ var messageListeners = {
         if (selection.table()) {
             selection.drop();
         }
+        // hide infobox once a selection is dropped
+        // this means users won't be able to click and copy from the infobox
+        infobox.remove();
     },
 
     preferencesUpdated: preferences.load,

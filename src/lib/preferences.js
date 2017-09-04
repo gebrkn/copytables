@@ -32,7 +32,8 @@ var defaults = {
 
     'copy.format.default.richHTMLCSS': true,
 
-    'infobox.enabled': true
+    'infobox.enabled': true,
+    'infobox.position': '0'
 };
 
 var captureModes = [
@@ -104,23 +105,23 @@ var copyFormats = [
 var infoFunctions = [
     {
         id: 'count',
-        name: 'Count',
+        name: 'count',
     },
     {
         id: 'sum',
-        name: 'Sum',
+        name: 'sum',
     },
     {
         id: 'avg',
-        name: 'Average'
+        name: 'average'
     },
     {
         id: 'min',
-        name: 'Min value'
+        name: 'min'
     },
     {
         id: 'max',
-        name: 'Max value'
+        name: 'max'
     }
 ];
 

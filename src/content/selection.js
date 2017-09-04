@@ -5,7 +5,8 @@ var M = module.exports = {};
 var dom = require('../lib/dom'),
     message = require('../lib/message'),
     cell = require('../lib/cell'),
-    table = require('./table')
+    table = require('./table'),
+    infobox = require('./infobox')
 ;
 
 function cellsToSelect(el, mode) {

@@ -60,7 +60,7 @@ html
 
         h2 Capture mode
         h3
-            | Press a hot key to turn on the capture mode and then select with a simple click-and-drag.
+            | In the capture mode, you press a hot key first and then select with a single click.
 
         .box
             table
@@ -94,16 +94,31 @@ html
 
         .box
             table
-                tr(data-notification="denied")
-                    td(colspan=2)
-                        i Infobox uses Chrome notifications. Please allow Copytables to send you notifications.
-
-                tr(data-notification="granted")
+                tr
                     td: b Enabled
                     td
                         label.cb
                             input(type="checkbox" data-bool="infobox.enabled")
                             span Yes
+                tr
+                    td: b Position
+                    td
+                        table.infobox-position
+                            tr
+                                td
+                                    div.position0: span
+                                    input(type="radio" name="infobox.position" data-select="infobox.position" data-select-value="0")
+                                td
+                                    div.position3: span
+                                    input(type="radio" name="infobox.position" data-select="infobox.position" data-select-value="3")
+                                td
+                                    div.position1: span
+                                    input(type="radio" name="infobox.position" data-select="infobox.position" data-select-value="1")
+                                td
+                                    div.position2: span
+                                    input(type="radio" name="infobox.position" data-select="infobox.position" data-select-value="2")
+
+
 
 
         h2 Interface

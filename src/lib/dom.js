@@ -105,7 +105,6 @@ M.contains = function (parent, el) {
     return false;
 };
 
-// Get element's bounds.
 M.bounds = function (el) {
     var r = el.getBoundingClientRect();
     return {
@@ -117,7 +116,6 @@ M.bounds = function (el) {
     };
 };
 
-// Get element's viewport offset.
 M.offset = function (el) {
     var r = {x: 0, y: 0};
     while (el) {
@@ -177,4 +175,14 @@ M.select = function (el) {
     range.selectNodeContents(el);
     selection.removeAllRanges();
     selection.addRange(range);
+};
+
+M.create = function(tag, atts) {
+    var e = document.createElement(tag);
+    if(atts) {
+        Object.keys(atts).forEach(function (a) {
+            e.setAttribute(a, atts[a]);
+        });
+    }
+    return e;
 };

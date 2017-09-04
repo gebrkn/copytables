@@ -1,8 +1,4 @@
-$border: #f0f0f0
-$body: #777
-$link: #aaa
-$accent: #1e88ff
-$hot: #f0a340
+@import "colors"
 
 html
     margin: 0
@@ -137,37 +133,39 @@ td i
     input:checked + span
         color: $accent
 
-#placement td
-    text-align: center
+.infobox-position
+    td
+        text-align: center
 
-.placement-box
-    width: 50px
-    height: 30px
-    border: 1px solid $accent
-    position: relative
-    margin-bottom: 5px
+    div
+        width: 50px
+        height: 30px
+        border: 1px solid $accent
+        position: relative
+        margin-bottom: 5px
 
-.placement-bar
-    width: 25px
-    height: 8px
-    background: $accent
-    position: absolute
+        span
 
-.lt .placement-bar
-    left: 1px
-    top: 1px
+            width: 25px
+            height: 8px
+            background: $accent
+            position: absolute
 
-.rt .placement-bar
-    right: 1px
-    top: 1px
+        &.position0 span
+            left: 1px
+            top: 1px
 
-.lb .placement-bar
-    left: 1px
-    bottom: 1px
+        &.position1 span
+            right: 1px
+            top: 1px
 
-.rb .placement-bar
-    right: 1px
-    bottom: 1px
+        &.position2 span
+            right: 1px
+            bottom: 1px
+
+        &.position3 span
+            left: 1px
+            bottom: 1px
 
 #custom-code
     width: 400px
