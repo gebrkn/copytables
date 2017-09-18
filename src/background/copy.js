@@ -61,6 +61,15 @@ function asCSV(mat) {
     }).join('\n');
 }
 
+function asTextile(mat) {
+    return trimTextMatrix(mat).map(function (row) {
+        return '|' + row.map(function (cell) {
+            return ' ' + cell + ' ';
+        }).join('|')
+    }).join('|\n') + '|';
+}
+
+
 M.formats = {};
 
 M.formats.richHTMLCSS = {
@@ -102,6 +111,12 @@ M.formats.textHTMLCSS = {
     opts: { method: 'clipboard', withSelection: true, keepStyles: true, keepHidden: true },
     exec: function(t) { M.textCopy(util.reduceWhitespace(t.html())) }
 };
+
+M.formats.textTextile = {
+    opts: { method: 'clipboard', withSelection: true, keepStyles: false, keepHidden: false },
+    exec: function(t) { M.textCopy(asTextile(t.textMatrix())) }
+};
+
 
 //
 
