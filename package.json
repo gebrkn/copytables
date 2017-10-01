@@ -1,6 +1,6 @@
 {
   "name": "copytables",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Chrome extension to select and copy table cells.",
   "scripts": {
     "chrome": "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --enable-logging=stderr --v=1 2>&1 | grep CONSOLE",

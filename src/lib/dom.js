@@ -138,7 +138,11 @@ M.hasClass = function (el, cls) {
     return el && el.classList && el.classList.contains(cls);
 };
 
-M.textContent = function (node) {
+function _strip(s) {
+    return String(s || '').replace(/^\s+|\s+$/g, '');
+}
+
+M.textContentItems = function (node) {
     var c = [];
 
     function walk(n) {
@@ -146,7 +150,7 @@ M.textContent = function (node) {
             return;
 
         if (n.nodeType === 3) {
-            var t = (n.textContent || '').trim();
+            var t = _strip(n.textContent);
             if (t.length)
                 c.push(t);
             return;
@@ -163,6 +167,17 @@ M.textContent = function (node) {
     return c;
 };
 
+M.textContent = function (node) {
+    return _strip(M.textContentItems(node).join(' '));
+};
+
+M.htmlContent = function (node) {
+    if (!node)
+        return '';
+    return _strip(node.innerHTML);
+};
+
+
 M.deselect = function () {
     var selection = window.getSelection();
     selection.removeAllRanges();
@@ -177,9 +192,9 @@ M.select = function (el) {
     selection.addRange(range);
 };
 
-M.create = function(tag, atts) {
+M.create = function (tag, atts) {
     var e = document.createElement(tag);
-    if(atts) {
+    if (atts) {
         Object.keys(atts).forEach(function (a) {
             e.setAttribute(a, atts[a]);
         });

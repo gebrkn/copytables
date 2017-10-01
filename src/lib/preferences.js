@@ -104,7 +104,12 @@ var copyFormats = [
     {
         "id": "textTextile",
         "name": "Textile",
-        "desc": "Copy as Textile"
+        "desc": "Copy as Textile (Text content)"
+    },
+    {
+        "id": "textTextileHTML",
+        "name": "Textile+HTML",
+        "desc": "Copy as Textile (HTML content)"
     },
 ];
 

@@ -4,7 +4,8 @@ var dom = require('../lib/dom'),
     matrix = require('../lib/matrix'),
     util = require('../lib/util'),
     cell = require('../lib/cell'),
-    css = require('../lib/css')
+    css = require('../lib/css'),
+    clipboard = require('./clipboard')
 ;
 
 function toMatrix(tbl) {
@@ -52,8 +53,16 @@ function toMatrix(tbl) {
     console.log(util.timeEnd('toMatrix'));
 
     return mat;
-};
+}
 
+function computeSpans(mat) {
+    matrix.each(mat, function (_, node) {
+        if (node.colRef)
+            node.colRef.colSpan = (node.colRef.colSpan || 0) + 1;
+        if (node.rowRef)
+            node.rowRef.rowSpan = (node.rowRef.rowSpan || 0) + 1;
+    });
+}
 
 function trim(tbl) {
     console.log(util.timeStart('trim.filter'));
@@ -96,12 +105,7 @@ function trim(tbl) {
 
     console.log(util.timeEnd('trim.remove'));
 
-    matrix.each(mat, function (_, node) {
-        if (node.colRef)
-            node.colRef.colSpan = (node.colRef.colSpan || 0) + 1;
-        if (node.rowRef)
-            node.rowRef.rowSpan = (node.rowRef.rowSpan || 0) + 1;
-    });
+    computeSpans(mat);
 
     matrix.each(mat, function (_, node) {
         if (node.td) {
@@ -174,6 +178,21 @@ function removeHiddenElements(node) {
         dom.remove(hidden);
     }
 }
+tcc = function (text) {
+    console.log(util.timeStart('textCopy'));
+
+    var t = document.createElement('textarea');
+    document.body.appendChild(t);
+
+    t.value = text;
+    t.focus();
+    t.select();
+
+    document.execCommand('copy');
+    document.body.removeChild(t);
+
+    console.log(util.timeEnd('textCopy'));
+};
 
 M.table = function () {
 };
@@ -223,19 +242,12 @@ M.table.prototype.initTable = function (data, options) {
         // is very slow for some reason. Instead, intercept paste
         // to obtain the clipboard and insert it via innerHTML which is waaay faster
 
-        var clipboard = '';
+        this.div.innerHTML = clipboard.content();
 
-        var pasteHandler = function (evt) {
-            console.log('paste handler toggled');
-            clipboard = evt.clipboardData.getData('text/html');
-            evt.stopPropagation();
-            evt.preventDefault();
-        };
-
-        document.addEventListener('paste', pasteHandler, true);
-        document.execCommand('paste');
-        document.removeEventListener('paste', pasteHandler);
-        this.div.innerHTML = clipboard;
+        // destroy the clipboard to avoid pasting of intermediate results
+        // this doesn't really fix that because they can hit paste before
+        // .content() finishes, but still...
+        clipboard.copyText('');
     }
 
     if (options.method === 'transfer') {
@@ -293,11 +305,18 @@ M.table.prototype.html = function () {
     return this.table.outerHTML;
 };
 
+M.table.prototype.nodeMatrix = function () {
+    var mat = toMatrix(this.table);
+    computeSpans(mat);
+    return mat;
+};
+
 M.table.prototype.textMatrix = function () {
     return matrix.map(toMatrix(this.table), function (_, node) {
-        return node.td ? dom.textContent(node.td).join(' ') : '';
+        return dom.textContent(node.td);
     });
 };
+
 
 M.table.prototype.destroy = function () {
     if (this.frame)

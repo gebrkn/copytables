@@ -13,7 +13,7 @@ Chrome extension to select and copy table cells.
 * Copy as CSV or tab-delimited text (for Excel).
 * Copy as HTML (for your website).
 
-###New in version 0.5
+### New in version 0.5
 
 * Configurable hotkeys for cell, column, row and table selection.
 * Capture mode: select with simple click and drag.
@@ -21,17 +21,17 @@ Chrome extension to select and copy table cells.
 * Popup information about selected cells.
 * Swap (transpose) copy.
 
-###New in version 0.4
+### New in version 0.4
 
 * New popup menu.
 * Table search function.
 * Configurable hotkey (Ctrl/Alt).
 
-###New in version 0.3
+### New in version 0.3
 
 * Styled HTML export.
 
-###New in version 0.2
+### New in version 0.2
 
 * CSV export.
 * Better HTML export.

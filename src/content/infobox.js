@@ -106,7 +106,7 @@ function numberValue(t) {
 function getValue(td) {
     var val = {text: '', number: 0, isNumber: false};
 
-    dom.textContent(td).some(function (t) {
+    dom.textContentItems(td).some(function (t) {
         var n = numberValue(t);
         if (n !== null) {
             return val = {text: t, number: n, isNumber: true};
