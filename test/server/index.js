@@ -98,6 +98,10 @@ app.get('/base', (req, res, next) => {
     res.send(renderDoc(''));
 });
 
+app.get('/frame', (req, res, next) => {
+    res.send(file(`${__dirname}/frame.html`));
+});
+
 app.get('/raw/:tpl', (req, res, next) => {
     let content = req.params.tpl.split(',').map(renderTemplate).join('');
     res.send(content);
