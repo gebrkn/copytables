@@ -3,12 +3,14 @@
   "version": "0.5.6",
   "description": "Chrome extension to select and copy table cells.",
   "scripts": {
-    "chrome": "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --enable-logging=stderr --v=1 2>&1 | grep CONSOLE",
+    "chrome": "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --enable-logging=stderr --v=1 2>&1 | node read-log.js",
     "dev": "NODE_ENV=dev gulp make",
     "watch": "NODE_ENV=dev gulp watch --url",
     "dev-server": "node ./test/server/index.js",
     "production": "NODE_ENV=production gulp make",
-    "deploy": "NODE_ENV=production gulp deploy"
+    "deploy": "NODE_ENV=production gulp deploy",
+    "test": "jasmine --config=./test/jasmine.json"
+
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^2.1.0",
     "gulp-util": "^3.0.8",
+    "jasmine": "^3.3.1",
     "mustache": "^2.3.0",
     "vinyl-named": "^1.1.0",
     "webpack-stream": "^3.2.0"

@@ -32,6 +32,13 @@ h3
     max-width: 600px
     line-height: 140%
 
+h4
+    margin: 0 0 12px 0
+    font-size: 12px
+    font-weight: 300
+    max-width: 600px
+    line-height: 140%
+
 .box
     padding: 12px 0 0 100px
 
@@ -47,7 +54,7 @@ table
 
 td
     margin: 0
-    padding: 12px 12px 12px 0
+    padding: 12px
     font-weight: 400
     text-align: left
 
@@ -70,6 +77,15 @@ td i
     font-size: 11px
     max-width: 220px
     padding: 0 12px 0 0
+
+td:first-child
+    width: 200px
+
+tr
+    border-bottom: 1px solid $lite
+
+tr tr
+    border-bottom: none
 
 .sticky
     margin-right: 6px
@@ -127,15 +143,19 @@ td i
 .cb
     display: block
     span
-        color: $link
+        visibility: hidden
         padding-left: 4px
 
     input:checked + span
         color: $accent
+        visibility: visible
 
 .infobox-position
     td
         text-align: center
+
+    td:first-child
+        width: auto
 
     div
         width: 50px

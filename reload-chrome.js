@@ -1,9 +1,10 @@
-/// Reload the extensions page and the the given url.
-/// run me as `osascript -l JavaScript reload-chrome.js 'http://whatever`
+/// Reload extensions....
+/// run me as `osascript -l JavaScript reload-chrome.js`
+//  requires Extension Reloader https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid
 
 function run(argv) {
     var app = Application('Google Chrome'),
-        extUrl = 'chrome://extensions/',
+        extUrl = 'http://reload.extensions',
         ctxUrl = argv;
 
     function each(a, fn) {
@@ -23,48 +24,25 @@ function run(argv) {
 
         each(app.windows, function (win) {
             each(win.tabs, function (tab, i) {
-                wts.push([win, tab, i])
+                wts.push({'window': win, 'tab': tab})
             });
         });
 
         return wts.filter(function (wt) {
-            return !wt[0].title().match(/^Developer Tools/);
+            return !wt.window.title().match(/^Developer Tools/);
         });
     }
 
     function reload() {
         var wts = enumTabs();
 
-        var ctxWt = find(wts, function (wt) {
-            return wt[1].url() == ctxUrl;
-        });
-
-        var extWt = find(wts, function (wt) {
-            return wt[1].url() == extUrl;
-        });
-
-        if (!ctxWt) {
-            console.log('no tab found for ' + ctxUrl);
+        if (!wts.length) {
+            console.log('no open tabs');
             var w = app.Window().make();
-            ctxWt = [w, w.tabs[0], 0];
-            w.tabs[0].url = ctxUrl;
-        }
-
-        if (!extWt) {
-            console.log('no tab found for ' + extUrl);
-            var w = app.Window().make();
-            extWt = [w, w.tabs[0], 0];
             w.tabs[0].url = extUrl;
+        } else {
+            wts[0].tab.url = extUrl;
         }
-
-        while(extWt[1].loading());
-        while(ctxWt[1].loading());
-
-        extWt[1].reload();
-        while(extWt[1].loading());
-
-        ctxWt[1].reload();
-        ctxWt[0].activeTabIndex = ctxWt[2] + 1;
     }
 
     app.activate();

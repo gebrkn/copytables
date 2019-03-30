@@ -3,7 +3,7 @@
 
 function __dbg() {
     var nl = '\n',
-        buf = [nl];
+        buf = [];
 
     function type(x) {
         try {
@@ -16,11 +16,11 @@ function __dbg() {
     function props(x, depth) {
         var r = Array.isArray(x) ? [] : {};
         try {
-            Object.keys(x).forEach(function(k) {
+            Object.keys(x).forEach(function (k) {
                 r[k] = inspect(x[k], depth + 1);
             });
             return r;
-        } catch(e) {
+        } catch (e) {
             return 'error';
         }
     }
@@ -32,7 +32,7 @@ function __dbg() {
             return x;
         var t = type(x),
             p = props(x, depth);
-        if(t === 'Object' || t === 'Array')
+        if (t === 'Object' || t === 'Array')
             return p;
         var r = {};
         r[t] = p;
@@ -42,14 +42,11 @@ function __dbg() {
     buf.push(location ? location.href : '??');
 
     [].forEach.call(arguments, function (arg) {
-        var t = inspect(arg, 0);
-        t = JSON.stringify(t, 0, 4);
-        buf = buf.concat((t || '').split(nl));
+        buf.push(inspect(arg, 0));
     });
 
-    return buf.map(function (x) {
-        return x + nl;
-    });
+    return '@@CT<<' + JSON.stringify(buf) + '>>CT@@';
+
 }
 
 
@@ -63,16 +60,22 @@ function handleLogging(content, path, isDev) {
     }
 
     content.split('\n').forEach(function (line, lnum) {
-        var ref = path + ':' + (lnum + 1);
         var m = line.match(/(.*?)console\.log\((.*)\)(.*)/);
 
         if (m) {
             if (isDev) {
-                out.push(`${m[1]}__dbg("${ref}",${m[2]}).forEach(console.log.bind(console))${m[3]}`);
+                out.push([
+                    m[1],
+                    'console.log(__dbg(',
+                    JSON.stringify(path),
+                    ',' + (lnum + 1),
+                    ',' + m[2] + '))',
+                    m[3]
+                ].join(''));
             }
         } else {
             if (isDev && line.match(/function/)) {
-                out.push(` // ${ref}`);
+                out.push(' // ' + path + ':' + (lnum + 1));
             }
             out.push(line);
         }

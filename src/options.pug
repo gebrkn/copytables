@@ -73,7 +73,7 @@ html
                 tr
                     td
                         b Reset
-                        i Automatically turn the capture mode off after selecting.
+                        i Automatically turn the capture mode off after selecting
                     td
                         label.cb
                             input(type="checkbox" data-bool="capture.reset")
@@ -101,6 +101,14 @@ html
                             input(type="checkbox" data-bool="infobox.enabled")
                             span Yes
                 tr
+                    td
+                        b Sticky
+                        i Keep infobox on screen until closed
+                    td
+                        label.cb
+                            input(type="checkbox" data-bool="infobox.sticky")
+                            span Yes
+                tr
                     td: b Position
                     td
                         table.infobox-position
@@ -118,6 +126,22 @@ html
                                     div.position2: span
                                     input(type="radio" name="infobox.position" data-select="infobox.position" data-select-value="2")
 
+        h2 Numbers
+        h3 Configure how Copytables parses numbers.
+
+        .box
+            table
+                tr
+                    td
+                        b Decimal point
+                    td
+                        input(type="text" data-text="number.decimal")
+                tr
+                    td
+                        b Group separator
+                    td
+                        input(type="text" data-text="number.group")
+
 
 
 
@@ -131,23 +155,30 @@ html
                         b Scroll speed
                         i Values are from 1 (very slow scrolling) to 100 (very fast).
                     td
-                        input(type="text" data-text="scroll.amount")
+                        input(type="number" data-text="scroll.amount")
                 tr
                     td
                         b Scroll acceleration
                         i Values are from 0 (no acceleration) to 100 (max acceleration).
                     td
-                        input(type="text" data-text="scroll.acceleration")
+                        input(type="number" data-text="scroll.acceleration")
 
 
         h2 Support
-        h3
-            | If you have questions or want to report a bug, don't hesitate to contact the developer.
-            | This extension is open source, Javascript programmers are welcome to fork and improve it.
 
         .box
 
-            p
+            h4
+                b
+                    | If you find this extension useful, please consider
+                    | <a href="https://merribithouse.net/copytables">making a donation</a>.
+                    | Thanks!
+
+            h4
+                <a href="mailto:georg@merribithouse.net">Contact me</a> if you have questions or want to report a problem.
+
+
+            h4
                 a(href=baseUrl) About
                 | &nbsp;|&nbsp;
                 a(href="https://github.com/gebrkn/copytables") Source code

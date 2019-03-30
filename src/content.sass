@@ -28,14 +28,12 @@ $infobox-color: $accent
     white-space: nowrap
     z-index: 65535
 
-    background-color: darken($infobox-color, 1)
+    background-color: transparentize(darken($infobox-color, 1), 0.03)
     background-image: url(inline-image('src/ico16.png'))
     background-position: 8px center
     background-repeat: no-repeat
 
-    padding: 12px 12px 12px 24px
-
-    opacity: 0.95
+    padding: 0 0 0 32px
     transition: opacity 0.2s ease
 
     &.hidden
@@ -60,9 +58,8 @@ $infobox-color: $accent
 
     b
         display: inline-block
-        margin: 0
-        padding: 0 12px
-        border-left: 1px dotted lighten($infobox-color, 25)
+        margin: 0 1px
+        padding: 12px 12px 12px 0
         font-weight: 200
         color: lighten($infobox-color, 35)
 
@@ -74,4 +71,10 @@ $infobox-color: $accent
             padding-left: 6px
             font-weight: 700
             color: lighten($infobox-color, 45)
+
+    span
+        background-color: transparentize(darken($infobox-color, 5), 0.03)
+        color: lighten($infobox-color, 45)
+        padding: 12px
+        cursor: pointer
 

@@ -3,7 +3,8 @@
 var M = module.exports = {};
 
 var keyboard = require('./keyboard'),
-    message = require('./message');
+    message = require('./message'),
+    number = require('./number');
 
 var firstMod = keyboard.modifiers.ALT,
     secondMod = keyboard.mac ? keyboard.modifiers.META : keyboard.modifiers.CTRL;
@@ -113,32 +114,63 @@ var copyFormats = [
     },
 ];
 
+function sum(vs) {
+    return vs.reduce(function (x, y) {
+        return x + (Number(y) || 0)
+    }, 0);
+}
+
+function getNumbers(values) {
+    var vs = [];
+
+    values.forEach(function (v) {
+        if (v.isNumber)
+            vs.push(v.number);
+    });
+
+    return vs.length ? vs : null;
+}
+
 var infoFunctions = [
     {
-        id: 'count',
         name: 'count',
+        fn: function (values) {
+            return values.length;
+        }
     },
     {
-        id: 'sum',
         name: 'sum',
+        fn: function (values) {
+            var vs = getNumbers(values);
+            return vs ? number.format(sum(vs)) : null;
+        }
     },
     {
-        id: 'avg',
-        name: 'average'
+        name: 'average',
+        fn: function (values) {
+            var vs = getNumbers(values);
+            return vs ? number.format(sum(vs) / vs.length, 2) : null;
+        }
     },
     {
-        id: 'min',
-        name: 'min'
+        name: 'min',
+        fn: function (values) {
+            var vs = getNumbers(values);
+            return vs ? number.format(Math.min.apply(Math, vs)) : null;
+        }
     },
     {
-        id: 'max',
-        name: 'max'
+        name: 'max',
+        fn: function (values) {
+            var vs = getNumbers(values);
+            return vs ? number.format(Math.max.apply(Math, vs)) : null;
+        }
     }
 ];
 
 var prefs = {};
 
-function _constrain (min, val, max) {
+function _constrain(min, val, max) {
     val = Number(val) || min;
     return Math.max(min, Math.min(val, max));
 }
@@ -149,7 +181,7 @@ M.load = function () {
             obj = obj || {};
 
             // from the previous version
-            if('modKey' in obj && String(obj.modKey) === '1') {
+            if ('modKey' in obj && String(obj.modKey) === '1') {
                 console.log('FOUND ALTERNATE MODKEY SETTING');
                 obj['modifier.cell'] = secondMod;
                 delete obj.modKey;
@@ -159,6 +191,14 @@ M.load = function () {
 
             prefs['scroll.amount'] = _constrain(1, prefs['scroll.amount'], 100);
             prefs['scroll.acceleration'] = _constrain(0, prefs['scroll.acceleration'], 100);
+
+            if (!prefs['number.group']) {
+                prefs['number.group'] = number.defaultFormat().group;
+            }
+
+            if (!prefs['number.decimal']) {
+                prefs['number.decimal'] = number.defaultFormat().decimal;
+            }
 
             console.log('PREFS LOAD', prefs);
             resolve(prefs);
@@ -202,10 +242,24 @@ M.copyFormats = function () {
     });
 };
 
-M.infoFunctions = function() {
+M.numberFormat = function () {
+    var g = M.val('number.group');
+    var d = M.val('number.decimal');
+
+    if (!g && !d) {
+        return number.defaultFormat();
+    }
+
+    return {
+        group: g || '',
+        decimal: d || '',
+    };
+}
+
+M.infoFunctions = function () {
     return infoFunctions;
 };
 
-M.captureModes = function() {
+M.captureModes = function () {
     return captureModes;
 };

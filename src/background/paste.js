@@ -258,7 +258,7 @@ M.table.prototype.initTable = function (data, options) {
 
     this.table = dom.findOne('table', this.div);
 
-    if (!this.table || this.table.tagName.toUpperCase() !== 'TABLE')
+    if (!this.table || dom.tag(this.table) !== 'TABLE')
         return false;
 
     if (data.hasSelection) {

@@ -5,109 +5,15 @@ var M = module.exports = {};
 var cell = require('../lib/cell'),
     dom = require('../lib/dom'),
     event = require('../lib/event'),
-    preferences = require('../lib/preferences');
+    preferences = require('../lib/preferences'),
+    number = require('../lib/number');
 
-function sum(vs) {
-    return vs.reduce(function (x, y) {
-        return x + y
-    });
-}
 
-function getNumbers(values) {
-    var vs = [];
-
-    values.forEach(function (v) {
-        if (v.isNumber)
-            vs.push(v.number);
-    });
-
-    return vs.length ? vs : null;
-}
-
-var naSymbol = '-';
-
-function format(n) {
-    return Number(n.toFixed(2)).toLocaleString();
-}
-
-var compute = {
-
-    count: function (values) {
-        return values.length;
-    },
-
-    sum: function (values) {
-        var vs = getNumbers(values);
-        return vs ? format(sum(vs)) : naSymbol;
-    },
-
-    avg: function (values) {
-        var vs = getNumbers(values);
-        return vs ? format(sum(vs) / vs.length) : naSymbol;
-    },
-
-    min: function (values) {
-        var vs = getNumbers(values);
-        return vs ? format(Math.min.apply(Math, vs)) : naSymbol;
-    },
-
-    max: function (values) {
-        var vs = getNumbers(values);
-        return vs ? format(Math.max.apply(Math, vs)) : naSymbol;
-    }
-};
-
-function parseNumber(t) {
-    // 123.45
-    if (t.match(/^\d+(\.\d+)?$/)) {
-        return Number(t);
-    }
-
-    // -12,345,678.00
-    if (t.match(/^\d{1,3}(,\d{3})+(\.\d+)?$/)) {
-        return Number(t.split(',').join(''));
-    }
-
-    // 1234,5678
-    if (t.match(/^\d+,\d+$/)) {
-        return Number(t.split(',').join('.'));
-    }
-
-    // 12.345.678,00
-    if (t.match(/^\d{1,3}(\.\d{3})+(,\d+)?$/)) {
-        return Number(t.split('.').join('').split(',').join('.'));
-    }
-}
-
-function numberValue(t) {
-    var m = t.match(/-?\d+([.,]\d+)*/g);
-
-    if (!m || m.length !== 1) {
-        return null;
-    }
-
-    t = m[0];
-
-    var sign = 1;
-
-    if (t[0] === '-') {
-        t = t.slice(1);
-        sign = -1;
-    }
-
-    var n = parseNumber(t);
-    if (!isNaN(n)) {
-        return sign * n;
-    }
-
-    return null;
-}
-
-function getValue(td) {
+function getValue(td, fmt) {
     var val = {text: '', number: 0, isNumber: false};
 
     dom.textContentItems(td).some(function (t) {
-        var n = numberValue(t);
+        var n = number.extract(t, fmt);
         if (n !== null) {
             return val = {text: t, number: n, isNumber: true};
         }
@@ -127,14 +33,18 @@ function data(tbl) {
         return null;
     }
 
+    var fmt = preferences.numberFormat();
     var values = [];
 
     cells.forEach(function (td) {
-        values.push(getValue(td));
+        values.push(getValue(td, fmt));
     });
 
     return preferences.infoFunctions().map(function (f) {
-        return {title: f.name + ':', message: String(compute[f.id](values) || 0)};
+        return {
+            title: f.name + ':',
+            message: f.fn(values)
+        }
     });
 };
 
@@ -154,19 +64,27 @@ function setTimer() {
 }
 
 function clearTimer() {
-        clearInterval(timer);
-        timer = 0;
+    clearInterval(timer);
+    timer = 0;
 }
 
-function html(items) {
+function html(items, sticky) {
     var h = [];
 
     items.forEach(function (item) {
-        if (item.message !== naSymbol)
-            h.push('<b>' + item.title + '<i>' + item.message + '</i></b>');
+        if (item.message !== null)
+            h.push(' <b>' + item.title + '<i>' + item.message + '</i></b>');
     });
 
-    return '<span>' + h.join('') + '</span>';
+    h = h.join('');
+
+    if (sticky) {
+        h += '<span>&times;</span>';
+    } else {
+        h += '<b></b>';
+    }
+
+    return h;
 }
 
 function init() {
@@ -175,18 +93,24 @@ function init() {
         'data-position': preferences.val('infobox.position') || '0'
     });
     document.body.appendChild(box);
+
+    box.addEventListener('click', function (e) {
+        if (dom.tag(e.target) === 'SPAN')
+            hide();
+    });
+
     return box;
 }
 
 function draw() {
     if (!pendingContent) {
-        console.log('no pendingContent');
+        //console.log('no pendingContent');
         clearTimer();
         return;
     }
 
     if (pendingContent === 'hide') {
-        console.log('removed');
+        //console.log('removed');
         dom.remove([getBox()]);
         clearTimer();
         return;
@@ -198,19 +122,19 @@ function draw() {
     box.innerHTML = pendingContent;
 
     pendingContent = null;
-    console.log('drawn');
+    //console.log('drawn');
 }
 
 function show(items) {
-    var p = html(items);
+    var p = html(items, preferences.val('infobox.sticky'));
 
     if (p === pendingContent) {
-        console.log('same content');
+        //console.log('same content');
         return;
     }
 
     if (pendingContent) {
-        console.log('queued');
+        //console.log('queued');
     }
 
     pendingContent = p;
@@ -218,7 +142,7 @@ function show(items) {
 }
 
 function hide() {
-    console.log('about to remove...');
+    //console.log('about to remove...');
     pendingContent = 'hide';
     dom.addClass(getBox(), 'hidden');
     setTimer();
@@ -226,11 +150,14 @@ function hide() {
 
 M.update = function (tbl) {
     if (preferences.val('infobox.enabled')) {
-        show(data(tbl));
+        var d = data(tbl);
+        if (d && d.length)
+            show(d);
     }
 };
 
 M.remove = function () {
-    hide();
+    if (!preferences.val('infobox.sticky')) {
+        hide();
+    }
 };
-

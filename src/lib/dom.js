@@ -26,6 +26,12 @@ M.find = function (sel, where) {
     return (where || document).querySelectorAll(sel);
 };
 
+M.tag = function (el) {
+    if (!el || !el.tagName)
+        return '';
+    return String(el.tagName).toUpperCase();
+};
+
 M.indexOf = function (el, sel, where) {
     var idx = -1;
     M.find(sel, where).forEach(function (e, n) {

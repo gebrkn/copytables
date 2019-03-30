@@ -84,11 +84,8 @@ gulp.task('clean', function () {
 
 gulp.task('make', ['clean', 'pug', 'sass', 'copy', 'js']);
 
-// npm run watch 'http://...'
-var reloadUrl = process.argv[4] || TEST_URL;
-
 gulp.task('reload', ['make'], function () {
-    cp.execSync('osascript -l JavaScript ./reload-chrome.js "' + reloadUrl + '"');
+    cp.execSync('osascript -l JavaScript ./reload-chrome.js');
 });
 
 gulp.task('watch', ['reload'], function () {
