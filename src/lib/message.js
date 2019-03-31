@@ -33,18 +33,28 @@ function convertSender(sender) {
 function toBackground(msg) {
     msg.to = 'background';
     return new Promise(function (resolve) {
-        chrome.runtime.sendMessage(msg, function (res) {
-            resolve({receiver: 'background', data: res});
-        });
+        try {
+            chrome.runtime.sendMessage(msg, function (res) {
+                resolve({receiver: 'background', data: res});
+            });
+        } catch (e) {
+            console.log('FAILED toBackground', e);
+            resolve({receiver: 'background', data: null})
+        }
     });
 }
 
 function toFrame(msg, frame) {
     msg.to = frame;
     return new Promise(function (resolve) {
-        chrome.tabs.sendMessage(frame.tabId, msg, {frameId: frame.frameId}, function (res) {
-            resolve({receiver: frame, data: res});
-        });
+        try {
+            chrome.tabs.sendMessage(frame.tabId, msg, {frameId: frame.frameId}, function (res) {
+                resolve({receiver: frame, data: res});
+            });
+        } catch (e) {
+            console.log('FAILED toFrame', e);
+            resolve({receiver: null, data: null})
+        }
     });
 }
 
