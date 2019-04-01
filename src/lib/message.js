@@ -32,30 +32,18 @@ function convertSender(sender) {
 
 function toBackground(msg) {
     msg.to = 'background';
-    return new Promise(function (resolve) {
-        try {
-            chrome.runtime.sendMessage(msg, function (res) {
-                resolve({receiver: 'background', data: res});
-            });
-        } catch (e) {
-            console.log('FAILED toBackground', e);
-            resolve({receiver: 'background', data: null})
-        }
-    });
+    return util.callChromeAsync('runtime.sendMessage', msg)
+        .then(function (res) {
+            return {receiver: 'background', data: res};
+        });
 }
 
 function toFrame(msg, frame) {
     msg.to = frame;
-    return new Promise(function (resolve) {
-        try {
-            chrome.tabs.sendMessage(frame.tabId, msg, {frameId: frame.frameId}, function (res) {
-                resolve({receiver: frame, data: res});
-            });
-        } catch (e) {
-            console.log('FAILED toFrame', e);
-            resolve({receiver: null, data: null})
-        }
-    });
+    return util.callChromeAsync('tabs.sendMessage', frame.tabId, msg, {frameId: frame.frameId})
+        .then(function (res) {
+            return {receiver: frame, data: res};
+        });
 }
 
 function toFrameList(msg, frames) {
@@ -67,9 +55,8 @@ function toFrameList(msg, frames) {
 M.enumFrames = function (tabFilter) {
 
     function framesInTab(tab) {
-        return new Promise(function (resolve) {
-            chrome.webNavigation.getAllFrames({tabId: tab.id}, function (frames) {
-
+        return util.callChromeAsync('webNavigation.getAllFrames', {tabId: tab.id})
+            .then(function (frames) {
                 if (!frames) {
                     // Vivaldi, as of 1.8.770.56, doesn't support getAllFrames() properly
                     // let's pretend there's only one top frame
@@ -79,27 +66,24 @@ M.enumFrames = function (tabFilter) {
                         parentFrameId: -1
                     }];
                 }
-
-                resolve(frames.map(function (f) {
+                return frames.map(function (f) {
                     f.tabId = tab.id;
                     return f;
-                }));
+                })
             });
-        });
     }
 
     if (tabFilter === 'active') {
         tabFilter = {active: true, currentWindow: true};
     }
 
-    return new Promise(function (resolve) {
-        chrome.tabs.query(tabFilter || {}, function (tabs) {
-            Promise.all(tabs.map(framesInTab)).then(function (res) {
-                resolve(util.flatten(res));
-            });
+    return util.callChromeAsync('tabs.query', tabFilter || {})
+        .then(function (tabs) {
+            return Promise.all(tabs.map(framesInTab));
+        }).then(function (res) {
+            return util.flatten(res);
         });
-    });
-};
+}
 
 M.background = function (msg) {
     console.log('MESSAGE: background', msg);
@@ -141,11 +125,10 @@ M.broadcast = function (msg) {
 };
 
 M.listen = function (listeners) {
-    chrome.runtime.onMessage.addListener(function (msg, sender, fn) {
+    util.callChrome('runtime.onMessage.addListener', function (msg, sender, fn) {
         if (listeners[msg.name]) {
             msg.sender = convertSender(sender);
             var res = listeners[msg.name](msg);
-            //console.log('RESPONDING TO', msg, res);
             return fn(res);
         }
         console.log('LOST', msg.name);

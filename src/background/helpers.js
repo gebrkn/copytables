@@ -16,14 +16,14 @@ M.updateUI = function () {
 };
 
 M.setBadge = function (s) {
-    chrome.browserAction.setBadgeText({text: s})
-    chrome.browserAction.setBadgeBackgroundColor({color: badgeColor});
+    util.callChrome('browserAction.setBadgeText', {text: s})
+    util.callChrome('browserAction.setBadgeBackgroundColor', {color: badgeColor});
 };
 
 M.updateBadge = function () {
     var mode = preferences.val('_captureMode');
 
-    console.log('mode=' + mode);
+    console.log('updateBadge mode=' + mode);
 
     switch(mode) {
         case 'column':

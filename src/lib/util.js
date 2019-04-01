@@ -60,7 +60,7 @@ M.nobr = function (s) {
     return s.replace(/[\r\n]+/g, ' ');
 };
 
-M.format = function(s, obj) {
+M.format = function (s, obj) {
     return s.replace(/\${(\w+)}/g, function (_, $1) {
         return obj[$1];
     });
@@ -68,16 +68,62 @@ M.format = function(s, obj) {
 
 var _times = {};
 
-M.timeStart = function(name) {
+M.timeStart = function (name) {
     _times[name] = new Date;
     return 'TIME START: ' + name;
 };
 
-M.timeEnd = function(name) {
-    if(_times[name]) {
+M.timeEnd = function (name) {
+    if (_times[name]) {
         var t = new Date() - _times[name];
         delete _times[name];
         return 'TIME END: ' + name + ' ' + t;
     }
 };
 
+function callChrome(useAsync, fn, args) {
+    var parts = fn.split('.'),
+        obj = chrome,
+        method = parts.pop();
+
+    parts.forEach(function (p) {
+        obj = obj[p];
+    });
+
+    console.log('CALL_CHROME', useAsync, fn);
+
+    if (!useAsync) {
+        try {
+            return obj[method].apply(obj, args);
+        } catch (err) {
+            console.log('CALL_CHROME_ERROR', fn, err.message);
+            return null;
+        }
+    }
+    return new Promise(function (resolve, reject) {
+        function callback(res) {
+            var err = chrome.runtime.lastError;
+            if (err) {
+                console.log('CALL_CHROME_LAST_ERROR', fn, err);
+                resolve(null);
+            } else {
+                resolve(res);
+            }
+        }
+
+        try {
+            obj[method].apply(obj, args.concat(callback));
+        } catch (err) {
+            console.log('CALL_CHROME_ERROR', fn, err.message);
+            resolve(null);
+        }
+    });
+}
+
+M.callChrome = function (fn) {
+    return callChrome(false, fn, [].slice.call(arguments, 1));
+};
+
+M.callChromeAsync = function (fn) {
+    return callChrome(true, fn, [].slice.call(arguments, 1));
+};

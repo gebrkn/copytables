@@ -3,8 +3,8 @@
 var M = module.exports = {};
 
 var keyboard = require('./keyboard'),
-    message = require('./message'),
-    number = require('./number');
+    number = require('./number'),
+    util = require('./util');
 
 var firstMod = keyboard.modifiers.ALT,
     secondMod = keyboard.mac ? keyboard.modifiers.META : keyboard.modifiers.CTRL;
@@ -176,8 +176,8 @@ function _constrain(min, val, max) {
 }
 
 M.load = function () {
-    return new Promise(function (resolve) {
-        chrome.storage.local.get(null, function (obj) {
+    return util.callChromeAsync('storage.local.get', null)
+        .then(function (obj) {
             obj = obj || {};
 
             // from the previous version
@@ -201,19 +201,18 @@ M.load = function () {
             }
 
             console.log('PREFS LOAD', prefs);
-            resolve(prefs);
+            return prefs;
         });
-    });
 };
 
 M.save = function () {
-    return new Promise(function (resolve) {
-        chrome.storage.local.clear();
-        chrome.storage.local.set(prefs, function () {
+    return util.callChromeAsync('storage.local.clear')
+        .then(function () {
+            return util.callChromeAsync('storage.local.set', prefs);
+        }).then(function () {
             console.log('PREFS SET', prefs);
-            resolve(prefs);
+            return prefs;
         });
-    });
 };
 
 M.setAll = function (obj) {

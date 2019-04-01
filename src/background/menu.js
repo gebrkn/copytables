@@ -1,6 +1,7 @@
 var M = module.exports = {};
 
-var preferences = require('../lib/preferences');
+var preferences = require('../lib/preferences'),
+    util = require('../lib/util');
 
 var mainMenu = {
     id: 'root',
@@ -61,16 +62,16 @@ function createMenu(menu, parent) {
 
     var sub = menu.children;
 
-    if(menu.id === 'copyAs') {
-        var cf = preferences.copyFormats().filter(function(f) {
+    if (menu.id === 'copyAs') {
+        var cf = preferences.copyFormats().filter(function (f) {
             return f.enabled;
         });
 
-        if(!cf.length) {
+        if (!cf.length) {
             return;
         }
 
-        sub = cf.map(function(f) {
+        sub = cf.map(function (f) {
             return {
                 id: 'copy_' + f.id,
                 title: f.name,
@@ -78,7 +79,7 @@ function createMenu(menu, parent) {
         });
     }
 
-    var mobj = chrome.contextMenus.create(desc);
+    var mobj = util.callChrome('contextMenus.create', desc);
 
     if (sub) {
         sub.forEach(function (subMenu) {
@@ -90,20 +91,21 @@ function createMenu(menu, parent) {
 }
 
 M.create = function () {
-    chrome.contextMenus.removeAll(function () {
-        createMenu(mainMenu);
-    });
+    util.callChromeAsync('contextMenus.removeAll')
+        .then(function () {
+            createMenu(mainMenu);
+        });
 };
 
 M.enable = function (ids, enabled) {
     ids.forEach(function (id) {
-        chrome.contextMenus.update(id, {enabled: enabled});
-        if(id === 'copy') {
-            var cf = preferences.copyFormats().filter(function(f) {
+        util.callChrome('contextMenus.update', id, {enabled: enabled});
+        if (id === 'copy') {
+            var cf = preferences.copyFormats().filter(function (f) {
                 return f.enabled;
             });
-            cf.forEach(function(f) {
-                chrome.contextMenus.update('copy_' + f.id, {enabled: enabled});
+            cf.forEach(function (f) {
+                util.callChrome('contextMenus.update', 'copy_' + f.id, {enabled: enabled});
             });
         }
     });
