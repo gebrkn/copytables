@@ -2,15 +2,22 @@
 
 var M = module.exports = {};
 
+function isDigit(s) {
+    return s.match(/^\d+$/);
+}
 
 function parseInteger(s) {
-    if (!s.match(/^\d+$/)) {
+    if (!isDigit(s)) {
         return null;
     }
     var n = Number(s);
-    return String(n) === s ? n : null;
+    return isDigit(String(n)) ? n : null;
 }
 
+function parseFraction(s) {
+    var n = parseInteger('1' + s);
+    return n === null ? null : String(n).slice(1);
+}
 
 function parseGrouped(s, fmt) {
     if (!fmt.group || s.indexOf(fmt.group) < 0) {
@@ -50,7 +57,7 @@ M.parse = function (s, fmt) {
 
     if (ds.length === 2) {
         var a = ds[0].length ? parseGrouped(ds[0], fmt) : 0;
-        var b = ds[1].length ? parseInteger(ds[1]) : 0;
+        var b = ds[1].length ? parseFraction(ds[1]) : 0;
 
         if (a === null || b === null) {
             return null;
@@ -122,7 +129,7 @@ M.defaultFormat = function () {
     return f;
 };
 
-M.format = function(n, prec) {
+M.format = function (n, prec) {
     n = prec ? Number(n.toFixed(prec)) : Number(n);
     return (n || 0).toLocaleString();
 };

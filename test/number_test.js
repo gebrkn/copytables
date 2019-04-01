@@ -37,6 +37,9 @@ describe('parse returns null', function () {
 
     it('with overflow', () =>
         expect(number.parse('234234234234234234234234234234234', formats.en)).toBe(null));
+
+    it('with decimal overflow', () =>
+        expect(number.parse('123.234234234234234234234234234234234', formats.en)).toBe(null));
 });
 
 describe('extract returns null', function () {
@@ -74,6 +77,13 @@ describe('parse is ok', function () {
         expect(number.parse('1.23.456,789', formats.de)).toBe(123456.789));
     it('with cz groups', () =>
         expect(number.parse('1 23 456,789', formats.cz)).toBe(123456.789));
+
+    it('with long decimal points', () =>
+        expect(number.parse('552.123', formats.en)).toBe(552.123));
+    it('with leading zero decimal points', () =>
+        expect(number.parse('552.005', formats.en)).toBe(552.005));
+    it('with zero decimal points', () =>
+        expect(number.parse('552.000', formats.en)).toBe(552));
 });
 
 
