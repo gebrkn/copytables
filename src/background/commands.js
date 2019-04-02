@@ -68,13 +68,13 @@ function captureCommand(mode) {
 
     var m = preferences.val('_captureMode');
     if (m === mode) {
-        preferences.set('_captureMode', '');
-    } else {
-        preferences.set('_captureMode', mode);
+        mode = '';
     }
 
-    helpers.updateUI();
-    message.allFrames('preferencesUpdated');
+    preferences.set('_captureMode', mode).then(function() {
+        helpers.updateUI();
+        message.allFrames('preferencesUpdated');
+    });
 }
 
 function selectCommand(mode, sender) {
