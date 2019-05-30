@@ -1,3 +1,37 @@
 <h1>copytables test page</h1>
-<iframe src="/frame" style="width:400px;height:640px;position:fixed;top:0;right:0"></iframe>
+
+<style>
+    #htmlbox, #textbox {
+        height: 300px;
+        background: white;
+        border: 5px solid #ccc;
+        overflow: auto;
+        width: 300px;
+    }
+    #htmlbox {
+        position: fixed;
+        top: 0;
+        right: 0;
+    }
+    #textbox {
+        position: fixed;
+        top: 310px;
+        right: 0;
+    }
+
+</style>
+
+<script>
+    function onPaste() {
+        setTimeout(function () {
+            document.querySelector('#htmlbox').innerHTML = document.querySelector('#textbox').value
+        }, 10);
+    }
+</script>
+
+
+<div id="htmlbox" contenteditable="true"></div>
+<textarea id="textbox" onpaste="onPaste()"></textarea>
+
+
 {{{content}}}
