@@ -25,11 +25,11 @@ var defaults = {
     'copy.format.enabled.richHTML': true,
     'copy.format.enabled.richHTMLCSS': true,
     'copy.format.enabled.textCSV': true,
-    'copy.format.enabled.textCSVSwap': true,
+    'copy.format.enabled.textCSVTranspose': true,
     'copy.format.enabled.textHTML': true,
     'copy.format.enabled.textHTMLCSS': true,
     'copy.format.enabled.textTabs': true,
-    'copy.format.enabled.textTabsSwap': true,
+    'copy.format.enabled.textTabsTranspose': true,
     'copy.format.enabled.textTextile': true,
 
     'copy.format.default.richHTMLCSS': true,
@@ -78,9 +78,9 @@ var copyFormats = [
         "desc": "Copy as tab-delimited text"
     },
     {
-        "id": "textTabsSwap",
-        "name": "Text+Swap",
-        "desc": "Copy as tab-delimited text, swap columns and rows"
+        "id": "textTabsTranspose",
+        "name": "Text+Transpose",
+        "desc": "Copy as tab-delimited text, transpose columns and rows"
     },
     {
         "id": "textCSV",
@@ -88,9 +88,9 @@ var copyFormats = [
         "desc": "Copy as comma-separated text"
     },
     {
-        "id": "textCSVSwap",
-        "name": "CSV+Swap",
-        "desc": "Copy as comma-separated text, swap columns and rows"
+        "id": "textCSVTranspose",
+        "name": "CSV+Transpose",
+        "desc": "Copy as comma-separated text, transpose columns and rows"
     },
     {
         "id": "textHTMLCSS",

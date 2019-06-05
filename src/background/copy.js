@@ -87,7 +87,7 @@ M.formats.textTabs = {
     }
 };
 
-M.formats.textTabsSwap = {
+M.formats.textTabsTranspose = {
     opts: {method: 'clipboard', withSelection: true, keepStyles: false, keepHidden: false},
     exec: function (t) {
         clipboard.copyText(asTabs(matrix.transpose(t.textMatrix())))
@@ -101,7 +101,7 @@ M.formats.textCSV = {
     }
 };
 
-M.formats.textCSVSwap = {
+M.formats.textCSVTranspose = {
     opts: {method: 'clipboard', withSelection: true, keepStyles: false, keepHidden: false},
     exec: function (t) {
         clipboard.copyText(asCSV(matrix.transpose(t.textMatrix())))
